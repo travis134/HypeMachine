@@ -1,0 +1,11 @@
+﻿<xapCache source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\Bin\Debug\HypeMachine.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="4/27/2011 2:16:16 AM">
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\Properties\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="4/27/2011 1:29:34 AM" />
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\obj\Debug\HypeMachine.dll" archivePath="HypeMachine.dll" lastWriteTime="4/27/2011 2:16:16 AM" />
+  <file source="C:\Program Files (x86)\Microsoft SDKs\Windows Phone\v7.0\Libraries\Silverlight\Microsoft.Phone.Controls.dll" archivePath="Microsoft.Phone.Controls.dll" lastWriteTime="9/1/2010 3:51:10 AM" />
+  <file source="c:\Program Files (x86)\Microsoft SDKs\Silverlight\v4.0\Libraries\Client\System.ServiceModel.Syndication.dll" archivePath="System.ServiceModel.Syndication.dll" lastWriteTime="8/26/2010 2:17:48 AM" />
+  <file source="c:\Program Files (x86)\Microsoft SDKs\Silverlight\v4.0\Libraries\Client\System.Xml.Serialization.dll" archivePath="System.Xml.Serialization.dll" lastWriteTime="8/26/2010 2:17:48 AM" />
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\ApplicationIcon.png" archivePath="ApplicationIcon.png" lastWriteTime="4/27/2011 1:29:34 AM" />
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\Background.png" archivePath="Background.png" lastWriteTime="4/27/2011 1:29:34 AM" />
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\SplashScreenImage.jpg" archivePath="SplashScreenImage.jpg" lastWriteTime="4/27/2011 1:29:34 AM" />
+  <file source="c:\users\travis\Dekstop\HypeMachine\HypeMachine\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="4/27/2011 1:41:38 AM" />
+</xapCache>
