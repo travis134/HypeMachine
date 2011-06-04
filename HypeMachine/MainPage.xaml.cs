@@ -10,51 +10,103 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
-using System.ServiceModel.Syndication;
 using System.Xml;
-using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace HypeMachine
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private List<Game> games;
+
         // Constructor
         public MainPage()
         {
             InitializeComponent();
 
             String url = "http://www.gamestop.com/gs/content/feeds/gs_cs_All.xml";
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url));
-            request.BeginGetResponse(ResponseHandler, request);
+
+            WebClient gamestopClient = new WebClient();
+            gamestopClient.OpenReadAsync(new Uri(url));
+            gamestopClient.OpenReadCompleted += new OpenReadCompletedEventHandler(request_DownloadGamesInfo);
+        
         }
 
-        private void ResponseHandler(IAsyncResult asyncResult)
+        void request_DownloadGamesInfo(object sender,
+            OpenReadCompletedEventArgs e)
         {
-            HttpWebRequest request = (HttpWebRequest)asyncResult.AsyncState;
-            HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(asyncResult);
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (e.Error == null)
             {
-                XmlReader reader = XmlReader.Create(response.GetResponseStream());
-                SyndicationFeed feed = SyndicationFeed.Load(reader);
-                System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+                XDocument xdoc = XDocument.Load(e.Result);
+                this.games = (from item in xdoc.Descendants("item")
+                                                  select new Game()
+                                                  {
+                                                      Guid = new Uri(item.Element("guid").Value),
+                                                      Link = new Uri(item.Element("link").Value),
+                                                      Category = item.Element("category").Value,
+                                                      Title = item.Element("title").Value,
+                                                      Description = item.Element("description").Value,
+                                                      PubDate = DateTime.Parse(item.Element("pubDate").Value)
+                                                  }).ToList();
+
+                foreach (Game game in this.games)
                 {
-                    List<Game> games = new List<Game>();
-                    PanoramaItem panoramaItem = new PanoramaItem();
-                    ListBox listBox = new ListBox();
-                    foreach (SyndicationItem item in feed.Items)
-                    {
-                        games.Add(new Game(item.Title.Text.ToString(), item.Links[0].Uri.ToString(), item.Summary.Text.ToString(), item.Categories[0].Name.ToString()));
-                    }
-                    foreach (Game game in games)
-                    {
-                        listBox.Items.Add(new Image(){Source = new BitmapImage(game.Image)});
-                        System.Diagnostics.Debug.WriteLine(game.Image.ToString());
-                    }
-                    panoramaItem.Content = listBox;
-                    mainView.Items.Add(panoramaItem);
-                });
+                    System.Diagnostics.Debug.WriteLine(game.ToString());
+                    System.Diagnostics.Debug.WriteLine("\n\n--------------------\n\n");
+                }
             }
+        }
+
+        public void parseRSS(XmlReader gamestopReader)
+        {
+            while (gamestopReader.Read())
+            {
+                if (gamestopReader.NodeType == XmlNodeType.Element)
+                {
+                    switch (gamestopReader.Name)
+                    {
+                        case "item":
+                            XmlReader gameReader = gamestopReader.ReadSubtree();
+                            this.games.Add(parseGame(gameReader));
+                            break;
+                    }
+                }
+            }
+        }
+
+        public Game parseGame(XmlReader gamesReader)
+        {
+            Game gameResult = new Game();
+
+            while (gamesReader.Read())
+            {
+                if (gamesReader.NodeType == XmlNodeType.Element)
+                {
+                    switch (gamesReader.Name)
+                    {
+                        case "guid":
+                            gameResult.Guid = new Uri(gamesReader.ReadElementContentAsString());
+                            break;
+                        case "link":
+                            gameResult.Link = new Uri(gamesReader.ReadElementContentAsString());
+                            break;
+                        case "category":
+                            gameResult.Category = gamesReader.ReadElementContentAsString();
+                            break;
+                        case "title":
+                            gameResult.Title = gamesReader.ReadElementContentAsString();
+                            break;
+                        case "description":
+                            gameResult.Description = gamesReader.ReadElementContentAsString();
+                            break;
+                        case "pubDate":
+                            gameResult.PubDate = gamesReader.ReadElementContentAsDateTime();
+                            break;
+                    }
+                }
+            }
+
+            return gameResult;
         }
     }
 }
