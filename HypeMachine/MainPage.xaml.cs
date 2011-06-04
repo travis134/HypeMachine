@@ -17,96 +17,48 @@ namespace HypeMachine
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private List<Game> games;
 
-        // Constructor
         public MainPage()
         {
             InitializeComponent();
 
-            String url = "http://www.gamestop.com/gs/content/feeds/gs_cs_All.xml";
+            List<Game> games = new List<Game>();
+
+            String url = "http://www.gamestop.com/SyndicationHandler.ashx?Filter=BestSellers&platform=xbox360";
 
             WebClient gamestopClient = new WebClient();
             gamestopClient.OpenReadAsync(new Uri(url));
-            gamestopClient.OpenReadCompleted += new OpenReadCompletedEventHandler(request_DownloadGamesInfo);
-        
-        }
-
-        void request_DownloadGamesInfo(object sender,
-            OpenReadCompletedEventArgs e)
-        {
-            if (e.Error == null)
-            {
-                XDocument xdoc = XDocument.Load(e.Result);
-                this.games = (from item in xdoc.Descendants("item")
-                                                  select new Game()
-                                                  {
-                                                      Guid = new Uri(item.Element("guid").Value),
-                                                      Link = new Uri(item.Element("link").Value),
-                                                      Category = item.Element("category").Value,
-                                                      Title = item.Element("title").Value,
-                                                      Description = item.Element("description").Value,
-                                                      PubDate = DateTime.Parse(item.Element("pubDate").Value)
-                                                  }).ToList();
-
-                foreach (Game game in this.games)
+            gamestopClient.OpenReadCompleted += new OpenReadCompletedEventHandler(
+                delegate(object sender, OpenReadCompletedEventArgs e)
                 {
-                    System.Diagnostics.Debug.WriteLine(game.ToString());
-                    System.Diagnostics.Debug.WriteLine("\n\n--------------------\n\n");
-                }
-            }
-        }
-
-        public void parseRSS(XmlReader gamestopReader)
-        {
-            while (gamestopReader.Read())
-            {
-                if (gamestopReader.NodeType == XmlNodeType.Element)
-                {
-                    switch (gamestopReader.Name)
+                    if (e.Error == null)
                     {
-                        case "item":
-                            XmlReader gameReader = gamestopReader.ReadSubtree();
-                            this.games.Add(parseGame(gameReader));
-                            break;
+                        games = parseRSS(e.Result);
                     }
-                }
-            }
+                });
         }
 
-        public Game parseGame(XmlReader gamesReader)
+        public List<Game> parseRSS(System.IO.Stream stream)
         {
-            Game gameResult = new Game();
+            XDocument xdoc = XDocument.Load(stream);
+            List<Game> games = (from item in xdoc.Descendants("item")
+                          select new Game()
+                          {
+                              Guid = new Uri(item.Element("guid").Value),
+                              Link = new Uri(item.Element("link").Value),
+                              Category = item.Element("category").Value,
+                              Title = item.Element("title").Value,
+                              Description = item.Element("description").Value,
+                              PubDate = DateTime.Parse(item.Element("pubDate").Value)
+                          }).ToList();
 
-            while (gamesReader.Read())
+            foreach (Game game in games)
             {
-                if (gamesReader.NodeType == XmlNodeType.Element)
-                {
-                    switch (gamesReader.Name)
-                    {
-                        case "guid":
-                            gameResult.Guid = new Uri(gamesReader.ReadElementContentAsString());
-                            break;
-                        case "link":
-                            gameResult.Link = new Uri(gamesReader.ReadElementContentAsString());
-                            break;
-                        case "category":
-                            gameResult.Category = gamesReader.ReadElementContentAsString();
-                            break;
-                        case "title":
-                            gameResult.Title = gamesReader.ReadElementContentAsString();
-                            break;
-                        case "description":
-                            gameResult.Description = gamesReader.ReadElementContentAsString();
-                            break;
-                        case "pubDate":
-                            gameResult.PubDate = gamesReader.ReadElementContentAsDateTime();
-                            break;
-                    }
-                }
+                System.Diagnostics.Debug.WriteLine(game.ToString());
             }
 
-            return gameResult;
+            return games;        
         }
+
     }
 }
