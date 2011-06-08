@@ -12,6 +12,8 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.Phone.Info;
+using System.Text;
 
 namespace HypeMachine
 {
@@ -21,6 +23,19 @@ namespace HypeMachine
         public MainPage()
         {
             InitializeComponent();
+
+            object tempId;
+            DeviceExtendedProperties.TryGetValue("DeviceUniqueId", out tempId);
+            byte[] phoneInfo = (byte[])tempId;
+
+            System.Diagnostics.Debug.WriteLine(Convert.ToBase64String(phoneInfo));
+
+            /*
+            for (int i = 0; i < phoneInfo.Length; i++)
+            {
+                System.Diagnostics.Debug.WriteLine(phoneInfo[i].ToString());
+            }
+            */
 
             List<Game> games = new List<Game>();
 
@@ -44,7 +59,7 @@ namespace HypeMachine
             List<Game> games = (from item in xdoc.Descendants("item")
                           select new Game()
                           {
-                              Guid = new Uri(item.Element("guid").Value),
+                              GuidUri = new Uri(item.Element("guid").Value),
                               Link = new Uri(item.Element("link").Value),
                               Category = item.Element("category").Value,
                               Title = item.Element("title").Value,
@@ -54,7 +69,7 @@ namespace HypeMachine
 
             foreach (Game game in games)
             {
-                System.Diagnostics.Debug.WriteLine(game.ToString());
+                //System.Diagnostics.Debug.WriteLine(game.ToString());
             }
 
             return games;        
