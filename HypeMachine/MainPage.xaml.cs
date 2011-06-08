@@ -14,11 +14,14 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Phone.Info;
 using System.Text;
+using System.Threading;
 
 namespace HypeMachine
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        int tempCount;
+        List<Game> games;
 
         public MainPage()
         {
@@ -28,18 +31,9 @@ namespace HypeMachine
             DeviceExtendedProperties.TryGetValue("DeviceUniqueId", out tempId);
             byte[] phoneInfo = (byte[])tempId;
 
-            System.Diagnostics.Debug.WriteLine(Convert.ToBase64String(phoneInfo));
+            games = new List<Game>();
 
-            /*
-            for (int i = 0; i < phoneInfo.Length; i++)
-            {
-                System.Diagnostics.Debug.WriteLine(phoneInfo[i].ToString());
-            }
-            */
-
-            List<Game> games = new List<Game>();
-
-            String url = "http://www.gamestop.com/SyndicationHandler.ashx?Filter=BestSellers&platform=xbox360";
+            String url = "http://www.gamestop.com/SyndicationHandler.ashx?Filter=ComingSoon&platform=xbox360";
 
             WebClient gamestopClient = new WebClient();
             gamestopClient.OpenReadAsync(new Uri(url));
@@ -48,15 +42,84 @@ namespace HypeMachine
                 {
                     if (e.Error == null)
                     {
-                        games = parseRSS(e.Result);
+                        parseRSS(e.Result);
                     }
                 });
         }
 
-        public List<Game> parseRSS(System.IO.Stream stream)
+        public void downloadHype(object data)
+        {
+            int index = (int)data;
+            String tempUrl = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=2&guid={0}", games[index].GuidString);
+
+            WebClient client = new WebClient();
+            client.OpenReadAsync(new Uri(tempUrl));
+            client.OpenReadCompleted += new OpenReadCompletedEventHandler(
+                delegate(object sender, OpenReadCompletedEventArgs e)
+                {
+                    if (e.Error == null)
+                    {
+                        XDocument xdoc2 = XDocument.Load(e.Result);
+                        games[index].Hype = (from item in xdoc2.Descendants("hype")
+                                     select new Hype()
+                                     {
+                                         Id = uint.Parse(item.Element("id").Value),
+                                         GameId = uint.Parse(item.Element("game_id").Value),
+                                         UserId = uint.Parse(item.Element("user_id").Value),
+                                         Score = (uint.Parse(item.Element("score").Value) == 1)
+                                     }).ToList();
+                    }
+                });
+
+            String tempUrl2 = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=3&guid={0}", games[index].GuidString);
+
+            WebClient client2 = new WebClient();
+            client2.OpenReadAsync(new Uri(tempUrl));
+            client2.OpenReadCompleted += new OpenReadCompletedEventHandler(
+                delegate(object sender, OpenReadCompletedEventArgs e)
+                {
+                    if (e.Error == null)
+                    {
+                        XDocument xdoc2 = XDocument.Load(e.Result);
+                        games[index].Aftermath = (from item in xdoc2.Descendants("aftermath")
+                                             select new Aftermath()
+                                             {
+                                                 Id = uint.Parse(item.Element("id").Value),
+                                                 GameId = uint.Parse(item.Element("game_id").Value),
+                                                 UserId = uint.Parse(item.Element("user_id").Value),
+                                                 Score = (uint.Parse(item.Element("score").Value) == 1)
+                                             }).ToList();
+                    }
+                });
+
+            String tempUrl3 = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=4&guid={0}", games[index].GuidString);
+
+            WebClient client3 = new WebClient();
+            client3.OpenReadAsync(new Uri(tempUrl));
+            client3.OpenReadCompleted += new OpenReadCompletedEventHandler(
+                delegate(object sender, OpenReadCompletedEventArgs e)
+                {
+                    if (e.Error == null)
+                    {
+                        XDocument xdoc2 = XDocument.Load(e.Result);
+                        games[index].Comments = (from item in xdoc2.Descendants("comment")
+                                                  select new Comment()
+                                                  {
+                                                      Id = uint.Parse(item.Element("id").Value),
+                                                      GameId = uint.Parse(item.Element("game_id").Value),
+                                                      UserId = uint.Parse(item.Element("user_id").Value),
+                                                      Content = item.Element("content").Value,
+                                                      Date = DateTime.Parse(item.Element("date").Value)
+                                                  }).ToList();
+                    }
+                });
+        }
+
+
+        public void parseRSS(System.IO.Stream stream)
         {
             XDocument xdoc = XDocument.Load(stream);
-            List<Game> games = (from item in xdoc.Descendants("item")
+            this.games = (from item in xdoc.Descendants("item")
                           select new Game()
                           {
                               GuidUri = new Uri(item.Element("guid").Value),
@@ -67,12 +130,14 @@ namespace HypeMachine
                               PubDate = DateTime.Parse(item.Element("pubDate").Value)
                           }).ToList();
 
-            foreach (Game game in games)
-            {
-                //System.Diagnostics.Debug.WriteLine(game.ToString());
-            }
+            tempCount = games.Count*3;
 
-            return games;        
+            List<Thread> threads = new List<Thread>();
+            for(int i = 0; i < games.Count; i++)
+            {
+                threads.Add(new Thread(downloadHype));
+                threads[i].Start(i);
+            }
         }
 
     }
