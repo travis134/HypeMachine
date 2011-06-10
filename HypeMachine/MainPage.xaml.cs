@@ -20,7 +20,6 @@ namespace HypeMachine
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        int tempCount;
         List<Game> games;
 
         public MainPage()
@@ -47,75 +46,6 @@ namespace HypeMachine
                 });
         }
 
-        public void downloadHype(object data)
-        {
-            int index = (int)data;
-            String tempUrl = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=2&guid={0}", games[index].GuidString);
-
-            WebClient client = new WebClient();
-            client.OpenReadAsync(new Uri(tempUrl));
-            client.OpenReadCompleted += new OpenReadCompletedEventHandler(
-                delegate(object sender, OpenReadCompletedEventArgs e)
-                {
-                    if (e.Error == null)
-                    {
-                        XDocument xdoc2 = XDocument.Load(e.Result);
-                        games[index].Hype = (from item in xdoc2.Descendants("hype")
-                                     select new Hype()
-                                     {
-                                         Id = uint.Parse(item.Element("id").Value),
-                                         GameId = uint.Parse(item.Element("game_id").Value),
-                                         UserId = uint.Parse(item.Element("user_id").Value),
-                                         Score = (uint.Parse(item.Element("score").Value) == 1)
-                                     }).ToList();
-                    }
-                });
-
-            String tempUrl2 = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=3&guid={0}", games[index].GuidString);
-
-            WebClient client2 = new WebClient();
-            client2.OpenReadAsync(new Uri(tempUrl));
-            client2.OpenReadCompleted += new OpenReadCompletedEventHandler(
-                delegate(object sender, OpenReadCompletedEventArgs e)
-                {
-                    if (e.Error == null)
-                    {
-                        XDocument xdoc2 = XDocument.Load(e.Result);
-                        games[index].Aftermath = (from item in xdoc2.Descendants("aftermath")
-                                             select new Aftermath()
-                                             {
-                                                 Id = uint.Parse(item.Element("id").Value),
-                                                 GameId = uint.Parse(item.Element("game_id").Value),
-                                                 UserId = uint.Parse(item.Element("user_id").Value),
-                                                 Score = (uint.Parse(item.Element("score").Value) == 1)
-                                             }).ToList();
-                    }
-                });
-
-            String tempUrl3 = String.Format("http://slyduck.com/hypemachine/frontend.php?intent=4&guid={0}", games[index].GuidString);
-
-            WebClient client3 = new WebClient();
-            client3.OpenReadAsync(new Uri(tempUrl));
-            client3.OpenReadCompleted += new OpenReadCompletedEventHandler(
-                delegate(object sender, OpenReadCompletedEventArgs e)
-                {
-                    if (e.Error == null)
-                    {
-                        XDocument xdoc2 = XDocument.Load(e.Result);
-                        games[index].Comments = (from item in xdoc2.Descendants("comment")
-                                                  select new Comment()
-                                                  {
-                                                      Id = uint.Parse(item.Element("id").Value),
-                                                      GameId = uint.Parse(item.Element("game_id").Value),
-                                                      UserId = uint.Parse(item.Element("user_id").Value),
-                                                      Content = item.Element("content").Value,
-                                                      Date = DateTime.Parse(item.Element("date").Value)
-                                                  }).ToList();
-                    }
-                });
-        }
-
-
         public void parseRSS(System.IO.Stream stream)
         {
             XDocument xdoc = XDocument.Load(stream);
@@ -130,14 +60,97 @@ namespace HypeMachine
                               PubDate = DateTime.Parse(item.Element("pubDate").Value)
                           }).ToList();
 
-            tempCount = games.Count*3;
+            String tempUrl = "http://slyduck.com/hypemachine/test_driver.php";
 
-            List<Thread> threads = new List<Thread>();
-            for(int i = 0; i < games.Count; i++)
-            {
-                threads.Add(new Thread(downloadHype));
-                threads[i].Start(i);
-            }
+            List<Hype> hypes = new List<Hype>();
+            List<Aftermath> aftermaths = new List<Aftermath>();
+            List<Comment> comments = new List<Comment>();
+            List<User> users = new List<User>();
+            List<Game> games = new List<Game>();
+
+            WebClient client = new WebClient();
+            client.OpenReadAsync(new Uri(tempUrl));
+            client.OpenReadCompleted += new OpenReadCompletedEventHandler(
+                delegate(object sender, OpenReadCompletedEventArgs e)
+                {
+                    if (e.Error == null)
+                    {
+                        XDocument xdoc2 = XDocument.Load(e.Result);
+                        hypes = (from item in xdoc2.Descendants("Hype")
+                                select new Hype()
+                                {
+                                    Id = uint.Parse(item.Element("id").Value),
+                                    GameId = uint.Parse(item.Element("game_id").Value),
+                                    UserId = uint.Parse(item.Element("user_id").Value),
+                                    Score = (uint.Parse(item.Element("score").Value) == 1)
+                                }).ToList();
+                        aftermaths = (from item in xdoc2.Descendants("Aftermath")
+                                 select new Aftermath()
+                                 {
+                                     Id = uint.Parse(item.Element("id").Value),
+                                     GameId = uint.Parse(item.Element("game_id").Value),
+                                     UserId = uint.Parse(item.Element("user_id").Value),
+                                     Score = (uint.Parse(item.Element("score").Value) == 1)
+                                 }).ToList();
+                        comments = (from item in xdoc2.Descendants("Comment")
+                                 select new Comment()
+                                 {
+                                     Id = uint.Parse(item.Element("id").Value),
+                                     GameId = uint.Parse(item.Element("game_id").Value),
+                                     UserId = uint.Parse(item.Element("user_id").Value),
+                                     Content = item.Element("content").Value,
+                                     Date = DateTime.Parse(item.Element("date").Value)
+                                 }).ToList();
+                        users = (from item in xdoc2.Descendants("User")
+                                select new User()
+                                {
+                                    Id = uint.Parse(item.Element("id").Value),
+                                    DeviceUniqueId = item.Element("device_unique_id").Value,
+                                    Nickname = item.Element("nickname").Value
+                                }).ToList();
+                        games = (from item in xdoc2.Descendants("Game")
+                                 select new Game()
+                                 {
+                                     Id = uint.Parse(item.Element("id").Value),
+                                     GuidString = item.Element("guid").Value
+                                 }).ToList();
+                    }
+
+                    foreach (Game game in this.games)
+                    {
+                        foreach (Game game2 in games)
+                        {
+                            if(game.GuidString.Equals(game2.GuidString, StringComparison.OrdinalIgnoreCase))
+                            {
+                                game.Id = game2.Id;
+                                foreach (Hype hype in hypes)
+                                {
+                                    if (hype.GameId == game.Id)
+                                    {
+                                        game.Hype.Add(hype);
+                                    }
+                                }
+                                foreach (Aftermath aftermath in aftermaths)
+                                {
+                                    if (aftermath.GameId == game.Id)
+                                    {
+                                        game.Aftermath.Add(aftermath);
+                                    }
+                                }
+                                foreach (Comment comment in comments)
+                                {
+                                    if (comment.GameId == game.Id)
+                                    {
+                                        game.Comments.Add(comment);
+                                    }
+                                }
+                                System.Diagnostics.Debug.WriteLine(game.ToString());
+                                break;
+                            }
+                        }
+                        
+                    }
+                });
         }
 
     }
