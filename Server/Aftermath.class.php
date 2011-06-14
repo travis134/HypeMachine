@@ -7,7 +7,11 @@ final class Aftermath extends Rating
 	public function __construct($args)
 	{
 		parent::__construct($args);
-		$this->read();
+		if(sizeof($args) == 3)
+		{
+			$this->create();
+		}
+		$this->setExists($this->read());
 	}
 	
 	public function __destruct()
@@ -109,7 +113,7 @@ final class Aftermath extends Rating
 			}
 		}
 		
-		return $flag;
+		return $row;
 	}
 	
 	public function update()

@@ -12,6 +12,7 @@ abstract class Rating extends Xml_Serializable_Object implements Db_Object
 	protected $game_id;
 	protected $user_id;
 	protected $score;
+	private $exists;
 
 	protected function __construct($args)
 	{
@@ -77,6 +78,16 @@ abstract class Rating extends Xml_Serializable_Object implements Db_Object
 		$this->game_id = null;
 		$this->user_id = null;
 		$this->score = null;
+	}
+	
+	public function getExists()
+	{
+		return $this->exists;
+	}
+	
+	public function setExists($exists)
+	{
+		$this->exists = $exists;;
 	}
 	
 	public function setId($id)

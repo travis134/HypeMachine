@@ -13,6 +13,7 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 	protected $user_id;
 	protected $content;
 	protected $date;
+	private $exists;
 
 	public function __construct($args)
 	{
@@ -51,6 +52,7 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 					$this->setContent($args['content']);
 				}
 				$this->setDate(time());
+				$this->create();
 				break;
 			case 4:
 				if(isset($args['game_id']))
@@ -69,6 +71,7 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 				{
 					$this->setDate($args['date']);
 				}
+				$this->create();
 				break;
 			case 5:
 				if(isset($args['id']))
@@ -93,7 +96,7 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 				}
 				break;
 		}
-		$this->read();
+		$this->setExists($this->read());
 	}
 	
 	public function __destruct()
@@ -103,6 +106,16 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 		$this->user_id = null;
 		$this->content = null;
 		$this->date = null;
+	}
+	
+	public function getExists()
+	{
+		return $this->exists;
+	}
+
+	public function setExists($exists)
+	{
+		$this->exists = $exists;;
 	}
 	
 	public function setId($id)
@@ -147,7 +160,11 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 	
 	public function setDate($date)
 	{
-		$this->date = date('Y-m-d H:i:s', strtotime($date));
+		if(!is_int($date))
+		{
+			$date = strtotime($date);
+		}
+		$this->date = date('Y-m-d H:i:s', $date);
 	}
 	
 	public function getDate()
@@ -255,11 +272,13 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 			}
 		}
 		
-		return $flag;
+		return $row;
 	}
 	
 	public function update()
 	{
+		$this->setDate(time());
+	
 		$dbh = Db_Singleton::instance();
 		$sth = $dbh->prepare("UPDATE comment_table SET game_id = :game_id, user_id = :user_id, content = :content, date = :date WHERE id = :id");
 		$flag = $sth->execute(array('id' => $this->getId(), 'game_id' => $this->getGameId(), 'user_id' => $this->getUserId(), 'content' => $this->getContent(), 'date' => $this->getDate()));

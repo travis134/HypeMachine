@@ -9,6 +9,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 	protected $id;
 	protected $device_unique_id;
 	protected $nickname;
+	private $exists;
 
 	public function __construct($args)
 	{
@@ -40,6 +41,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 				{
 					$this->setNickname($args['nickname']);
 				}
+				$this->create();
 				break;
 			case 3:
 				if(isset($args['id']))
@@ -56,7 +58,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 				}
 				break;
 		}
-		$this->read();
+		$this->setExists($this->read());
 	}
 	
 	public function __destruct()
@@ -64,6 +66,16 @@ final class User extends Xml_Serializable_Object implements Db_Object
 		$this->id = null;
 		$this->device_unique_id = null;
 		$this->nickname = null;
+	}
+	
+	public function getExists()
+	{
+		return $this->exists;
+	}
+	
+	public function setExists($exists)
+	{
+		$this->exists = $exists;;
 	}
 	
 	public function setId($id)
@@ -149,7 +161,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 			}
 		}
 		
-		return $flag;
+		return $row;
 	}
 	
 	public function update()

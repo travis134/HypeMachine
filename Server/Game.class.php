@@ -8,6 +8,7 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 {
 	protected $id;
 	protected $guid;
+	private $exists;
 
 	public function __construct($args)
 	{
@@ -24,6 +25,7 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 				else if(isset($args['guid']))
 				{
 					$this->setGuid($args['guid']);
+					$this->create();
 				}
 				break;
 			case 2:
@@ -37,13 +39,23 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 				}
 				break;
 		}
-		$this->read();
+		$this->setExists($this->read());
 	}
 	
 	public function __destruct()
 	{
 		$this->id = null;
 		$this->guid = null;
+	}
+	
+	public function getExists()
+	{
+		return $this->exists;
+	}
+	
+	public function setExists($exists)
+	{
+		$this->exists = $exists;;
 	}
 	
 	public function setId($id)
@@ -86,6 +98,23 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 		return $results;
 	}
 	
+	public static function readAllWithGuids($guids)
+	{
+		$results = array();
+		$dbh = Db_Singleton::instance();
+		
+		for($i = 0; $i<count($guids); $i++)
+		{
+			$temp = new Game(array('guid' => $guids[$i]));
+			if($temp->getExists())
+			{
+				$results[] = $temp;
+			}
+		}
+		
+		return $results;
+	}
+	
 	public function create()
 	{
 		$dbh = Db_Singleton::instance();
@@ -105,7 +134,7 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 		$dbh = Db_Singleton::instance();
 		$sth = $dbh->prepare("SELECT * FROM game_table WHERE (id = :id) OR (guid = :guid) LIMIT 0, 1");
 		$flag = $sth->execute(array('id' => $this->getId(), 'guid' => $this->getGuid()));
-		
+
 		if($flag)
 		{
 			$sth->setFetchMode(PDO::FETCH_ASSOC);
@@ -118,7 +147,7 @@ final class Game extends Xml_Serializable_Object implements Db_Object
 			}
 		}
 		
-		return $flag;
+		return $row;
 	}
 	
 	public function update()
