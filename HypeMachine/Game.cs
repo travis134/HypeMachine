@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace HypeMachine
 {
@@ -14,9 +15,49 @@ namespace HypeMachine
         private static readonly Regex PRICE_REGEX = new Regex(@"(?<PRICE>((\d{1,3},)*\d+)\.(\d{2}))");
         private static readonly Regex SUMMARY_REGEX = new Regex(@"<br> (?<SUMMARY>.*)");
 
-        public uint Id { get; set; }
-        public List<Hype> Hype { get; set; }
-        public List<Aftermath> Aftermath { get; set; }
+        private uint id;
+        [XmlIgnoreAttribute]
+        public uint Id
+        {
+            get
+            {
+                return this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
+
+        private List<Hype> hype;
+        [XmlIgnoreAttribute]
+        public List<Hype> Hype
+        {
+            get
+            {
+                return this.hype;
+            }
+            set
+            {
+                this.hype = value;
+            }
+        }
+
+        private List<Aftermath> aftermath;
+        [XmlIgnoreAttribute]
+        public List<Aftermath> Aftermath
+        {
+            get
+            {
+                return this.aftermath;
+            }
+            set
+            {
+                this.aftermath = value;
+            }
+        }
+
+        [XmlIgnoreAttribute]
         public float HypeScore
         {
             get
@@ -43,6 +84,8 @@ namespace HypeMachine
                 return result;
             }
         }
+
+        [XmlIgnoreAttribute]
         public float AftermathScore
         {
             get
@@ -69,9 +112,22 @@ namespace HypeMachine
                 return result;
             }
         }
-        public List<Comment> Comments { get; set; }
+
+        private List<Comment> comments;
+        public List<Comment> Comments
+        {
+            get
+            {
+                return this.comments;
+            }
+            set
+            {
+                this.comments = value;
+            }
+        }
 
         private String guidString;
+        [XmlIgnoreAttribute]
         public String GuidString
         {
             get
@@ -84,7 +140,9 @@ namespace HypeMachine
                 this.guidUri = new Uri(Game.BASE_PRODUCT_URI, Game.PRODUCT_SCRIPT + this.guidString);
             }
         }
+
         private Uri guidUri;
+        [XmlIgnoreAttribute]
         public Uri GuidUri
         {
             get
@@ -97,10 +155,37 @@ namespace HypeMachine
                 this.guidString = this.guidUri.ToString().Replace("http://www.gamestop.com/Catalog/ProductDetails.aspx?sku=", "");
             }
         }
-        public Uri Link { get; set; }
-        public String Category { get; set; }
+
+        private Uri link;
+        [XmlIgnoreAttribute]
+        public Uri Link
+        {
+            get
+            {
+                return this.link;
+            }
+            set
+            {
+                this.link = value;
+            }
+        }
+
+        private String category;
+        [XmlIgnoreAttribute]
+        public String Category
+        {
+            get
+            {
+                return this.category;
+            }
+            set
+            {
+                this.category = value;
+            }
+        }
 
         private String title;
+        [XmlIgnoreAttribute]
         public String Title
         {
             get
@@ -113,12 +198,64 @@ namespace HypeMachine
             }
         }
 
-        public Uri Image { get; set; }
-        public float Price { get; set; }
-        public String Summary { get; set; }
-        public DateTime ReleaseDate { get; set; }
+        private Uri image;
+        [XmlIgnoreAttribute]
+        public Uri Image
+        {
+            get
+            {
+                return this.image;
+            }
+            set
+            {
+                this.image = value;
+            }
+        }
+
+        private float price;
+        [XmlIgnoreAttribute]
+        public float Price
+        {
+            get
+            {
+                return this.price;
+            }
+            set
+            {
+                this.price = value;
+            }
+        }
+
+        private string summary;
+        [XmlIgnoreAttribute]
+        public String Summary
+        {
+            get
+            {
+                return this.summary;
+            }
+            set
+            {
+                this.summary = value;
+            }
+        }
+
+        private DateTime releaseDate;
+        [XmlIgnoreAttribute]
+        public DateTime ReleaseDate
+        {
+            get
+            {
+                return this.releaseDate;
+            }
+            set
+            {
+                this.releaseDate = value;
+            }
+        }
 
         private String description;
+        [XmlIgnoreAttribute]
         public String Description
         {
             get
@@ -147,7 +284,19 @@ namespace HypeMachine
             }
         }
 
-        public DateTime PubDate { get; set; }
+        private DateTime pubDate;
+        [XmlIgnoreAttribute]
+        public DateTime PubDate
+        {
+            get
+            {
+                return this.pubDate;
+            }
+            set
+            {
+                this.pubDate = value;
+            }
+        }
 
         public Game() 
         {
