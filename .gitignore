@@ -3,3 +3,5 @@ Obj/
 bin/
 obj/
 config.php
+Server/config.php
+/Server/config.php
