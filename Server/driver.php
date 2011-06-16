@@ -29,14 +29,14 @@ switch($intent)
 	default:
 		break;
 	case 'createUser':
-		$user = new User(array('device_unique_id' => $user_args['device_unique_id'],  'nickname' => $user_args['nickname']));
+		$user = new User(array('anid' => $user_args['anid'],  'nickname' => $user_args['nickname']));
 		if($user->getExists())
 		{
 			$root->appendChild($user->serialize());
 		}
 		break;
 	case 'readUser':
-		$user = new User(array('device_unique_id' => $user_args['device_unique_id']));
+		$user = new User(array('anid' => $user_args['anid']));
 		if($user->getExists())
 		{
 			$root->appendChild($user->serialize());
@@ -50,9 +50,9 @@ switch($intent)
 			{
 				$user->setNickname($user_args['nickname']);
 			}
-			if(isset($user_args['device_unique_id']))
+			if(isset($user_args['anid']))
 			{
-				$user->setDeviceUniqueId($user_args['device_unique_id']);
+				$user->setAnid($user_args['anid']);
 			}
 			$user->update();
 			$user->read();
@@ -221,8 +221,13 @@ switch($intent)
 		}
 		break;
 	case 'readAll':
-		$games = Game::readAllWithGuids($guids);
+		$user = new User(array('anid' => $user_args['anid'],  'nickname' => $user_args['nickname']));
+		if($user->getExists())
+		{
+			$root->appendChild($user->serialize());
+		}
 		$users = array();
+		$games = Game::readAllWithGuids($guids);
 		for($i = 0; $i<count($games); $i++)
 		{
 			$root->appendChild($games[$i]->serialize());
@@ -243,13 +248,13 @@ switch($intent)
 				$temp = new User(array('id' => $comments[$j]->getUserId()));
 				if($temp->getExists() && !in_array($temp, $users))
 				{
-					$users[] = $temp;
+					$users[$temp->getId()] = $temp;
 				};	
 			}
-			for($j = 0; $j<count($users); $j++)
-			{
-				$root->appendChild($users[$j]->serialize());
-			}
+		}
+		foreach($users as $user)
+		{
+			$root->appendChild($user->serialize());
 		}
 		break;
 }

@@ -24,12 +24,10 @@
             <controls:PanoramaItem Margin="0,0,-30,80">
                 <Grid x:Name="HypeGrid">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <TextBlock Text="hype it or hate it" Grid.Row="0"/>
-                    <ScrollViewer x:Name="ContentScroll" Grid.Row="1">
+                    
+                    <ScrollViewer x:Name="ContentScroll" Grid.Row="0">
                         <StackPanel x:Name="HypePanel" Margin="0" Orientation="Vertical">
                         </StackPanel>
                     </ScrollViewer>

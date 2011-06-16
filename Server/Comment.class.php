@@ -198,10 +198,10 @@ final class Comment extends Xml_Serializable_Object implements Db_Object
 			$temp_game = new Game(array('guid' => $args['guid']));
 			$arg_value = $temp_game->getId();
 		}
-		else if(isset($args['device_unique_id']))
+		else if(isset($args['anid']))
 		{
 			$arg_name = 'user_id';
-			$temp_user = new User(array('device_unique_id' => $args['device_unique_id']));
+			$temp_user = new User(array('anid' => $args['anid']));
 			$arg_value = $temp_user->getId();
 		}
 		else if(isset($args['nickname']))

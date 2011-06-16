@@ -30,17 +30,17 @@ namespace HypeMachine
             }
         }
 
-        private char[] deviceUniqueId;
-        [DataMember(Name = "DeviceUniqueId")]
-        public String DeviceUniqueId
+        private char[] anid;
+        [DataMember(Name = "Anid")]
+        public String Anid
         {
             get
             {
-                return new String(this.deviceUniqueId);
+                return new String(this.anid);
             }
             set
             {
-                this.deviceUniqueId = value.ToCharArray();
+                this.anid = value.ToCharArray();
             }
         }
 
@@ -60,19 +60,19 @@ namespace HypeMachine
 
         public User()
         {
-            this.deviceUniqueId = new char[20];
+            this.anid = new char[32];
             this.nickname = new char[12];
         }
 
-        public User(char[] deviceUniqueId, char[] nickname)
+        public User(char[] anid, char[] nickname)
         {
-            this.deviceUniqueId = deviceUniqueId;
+            this.anid = anid;
             this.nickname = nickname;
         }
 
-        public User(String deviceUniqueId, String nickname)
+        public User(String anid, String nickname)
         {
-            this.DeviceUniqueId = deviceUniqueId;
+            this.Anid = anid;
             this.Nickname = nickname;
         }
     }

@@ -26,14 +26,20 @@ namespace HypeMachine
         private Dictionary<String, Game> gamesList;
         private StorageHelper<Game> gamesStorageHelper;
         static Random rand = new Random();
+        private User currentUser;
+        private String anid;
 
         public MainPage()
         {
             InitializeComponent();
 
-            object tempId;
-            DeviceExtendedProperties.TryGetValue("DeviceUniqueId", out tempId);
-            byte[] phoneInfo = (byte[])tempId;
+            object tempAnid;
+            UserExtendedProperties.TryGetValue("ANID", out tempAnid);
+
+            if (tempAnid != null && tempAnid.ToString().Length >= (32 + 2))
+            {
+                this.anid = tempAnid.ToString().Substring(2, 32);
+            } 
 
             this.gamesList = new Dictionary<String, Game>();
             gamesStorageHelper = new StorageHelper<Game>("Games.xml", "Stale.txt");
@@ -62,7 +68,7 @@ namespace HypeMachine
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (gamesStorageHelper.IsStale(new TimeSpan(0, 0, 30)))
+            if (gamesStorageHelper.IsStale(new TimeSpan(0, 0, 0)))
             {
                 refreshInfo();
             }
@@ -122,8 +128,8 @@ namespace HypeMachine
                 tempInfo.RowDefinitions.Add(infoTop);
                 tempInfo.RowDefinitions.Add(infoBottom);
 
-                TextBlock tempTitle = new TextBlock { Text = game.Value.Title.ToString(), FontWeight=System.Windows.FontWeights.ExtraBold ,FontSize = 24, TextWrapping = System.Windows.TextWrapping.Wrap };
-                TextBlock tempDescription = new TextBlock { Text = "Tap for more info and comments", FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
+                TextBlock tempTitle = new TextBlock {Foreground= new SolidColorBrush(Colors.Black), Text = game.Value.Title.ToString(), FontWeight=System.Windows.FontWeights.ExtraBold ,FontSize = 28, TextWrapping = System.Windows.TextWrapping.Wrap };
+                TextBlock tempDescription = new TextBlock {Foreground= new SolidColorBrush(Color.FromArgb(255,20,20,20)), Text = game.Value.ShortSummary + "Tap for more info and comments", FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
 
                 Grid.SetRow(tempTitle, 0);
                 tempInfo.Children.Add(tempTitle);
@@ -253,7 +259,7 @@ namespace HypeMachine
 
         public void refreshInfo()
         {
-            String url = "http://www.gamestop.com/SyndicationHandler.ashx?Filter=ComingSoon&platform=wii";
+            String url = "http://www.gamestop.com/SyndicationHandler.ashx?Filter=ComingSoon&platform=xbox360";
 
             WebClient gamestopClient = new WebClient();
             gamestopClient.OpenReadAsync(new Uri(url));
@@ -312,6 +318,11 @@ namespace HypeMachine
                 }
             }
 
+            if (!String.IsNullOrEmpty(this.anid))
+            {
+                tempUrl += String.Format("&user_args[anid]={0}&user_args[nickname]={1}", this.anid, "Travis");
+            }
+
             List<Hype> hypes = new List<Hype>();
             List<Aftermath> aftermaths = new List<Aftermath>();
             List<Comment> comments = new List<Comment>();
@@ -356,7 +367,7 @@ namespace HypeMachine
                                  select new User()
                                  {
                                      Id = uint.Parse(item.Element("id").Value),
-                                     DeviceUniqueId = item.Element("device_unique_id").Value,
+                                     Anid = item.Element("anid").Value,
                                      Nickname = item.Element("nickname").Value
                                  }).ToList();
                         games = (from item in xdoc2.Descendants("Game")
@@ -365,6 +376,15 @@ namespace HypeMachine
                                      Key = item.Element("guid").Value,
                                      Value = uint.Parse(item.Element("id").Value)
                                  }).ToDictionary(o => o.Key, o => o.Value);
+
+                        foreach (User user in users)
+                        {
+                            if (user.Anid.Equals(this.anid, StringComparison.OrdinalIgnoreCase))
+                            {
+                                this.currentUser = user;
+                                break;
+                            }
+                        }
 
                         if (this.gamesList.Count > 0)
                         {

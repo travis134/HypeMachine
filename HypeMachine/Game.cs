@@ -240,6 +240,14 @@ namespace HypeMachine
             }
         }
 
+        public String ShortSummary
+        {
+            get
+            {
+                return this.Summary.Substring(0, Math.Min(70, this.Summary.Length)) + "...";
+            }
+        }
+
         private DateTime releaseDate;
         [DataMember(Name = "ReleaseDate")]
         public DateTime ReleaseDate
@@ -307,7 +315,7 @@ namespace HypeMachine
 
         public override string ToString()
         {
-            return String.Format("ID: {0}\nGUID: {1}\nLINK: {2}\nCATEGORY: {3}\nTITLE: {4}\nIMAGE: {5}\nPRICE: {6}\nSUMMARY: {7}\nRELEASEDATE: {8}\nPUBDATE: {9}\nHYPESCORE: {10}\nAFTERMATHSCORE: {11}\nCOMMENTS: {12}\n----------", this.Id.ToString(), this.GuidString.ToString(), this.Link.ToString(), this.Category, this.Title, this.Image.ToString(), this.Price.ToString(), this.Summary.Substring(0, Math.Min(100, this.Summary.Length)) + "...", this.ReleaseDate.ToShortDateString(), this.PubDate.ToShortDateString(), this.HypeScore.ToString(), this.AftermathScore.ToString(), this.Comments.Count.ToString());
+            return String.Format("ID: {0}\nGUID: {1}\nLINK: {2}\nCATEGORY: {3}\nTITLE: {4}\nIMAGE: {5}\nPRICE: {6}\nSUMMARY: {7}\nRELEASEDATE: {8}\nPUBDATE: {9}\nHYPESCORE: {10}\nAFTERMATHSCORE: {11}\nCOMMENTS: {12}\n----------", this.Id.ToString(), this.GuidString.ToString(), this.Link.ToString(), this.Category, this.Title, this.Image.ToString(), this.Price.ToString(), this.ShortSummary, this.ReleaseDate.ToShortDateString(), this.PubDate.ToShortDateString(), this.HypeScore.ToString(), this.AftermathScore.ToString(), this.Comments.Count.ToString());
         }
     }
 }

@@ -7,7 +7,7 @@ require_once 'Xml_Serializable_Object.class.php';
 final class User extends Xml_Serializable_Object implements Db_Object
 {
 	protected $id;
-	protected $device_unique_id;
+	protected $anid;
 	protected $nickname;
 	private $exists;
 
@@ -23,9 +23,9 @@ final class User extends Xml_Serializable_Object implements Db_Object
 				{
 					$this->setId($args['id']);
 				}
-				else if(isset($args['device_unique_id']))
+				else if(isset($args['anid']))
 				{
-					$this->setDeviceUniqueId($args['device_unique_id']);
+					$this->setAnid($args['anid']);
 				}
 				else if(isset($args['nickname']))
 				{
@@ -33,9 +33,9 @@ final class User extends Xml_Serializable_Object implements Db_Object
 				}
 				break;
 			case 2:
-				if(isset($args['device_unique_id']))
+				if(isset($args['anid']))
 				{
-					$this->setDeviceUniqueId($args['device_unique_id']);
+					$this->setAnid($args['anid']);
 				}
 				if(isset($args['nickname']))
 				{
@@ -48,9 +48,9 @@ final class User extends Xml_Serializable_Object implements Db_Object
 				{
 					$this->setId($args['id']);
 				}
-				if(isset($args['device_unique_id']))
+				if(isset($args['anid']))
 				{
-					$this->setDeviceUniqueId($args['device_unique_id']);
+					$this->setAnid($args['anid']);
 				}
 				if(isset($args['nickname']))
 				{
@@ -64,7 +64,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 	public function __destruct()
 	{
 		$this->id = null;
-		$this->device_unique_id = null;
+		$this->anid = null;
 		$this->nickname = null;
 	}
 	
@@ -88,14 +88,14 @@ final class User extends Xml_Serializable_Object implements Db_Object
 		return $this->id;
 	}
 	
-	public function setDeviceUniqueId($device_unique_id)
+	public function setAnid($anid)
 	{
-		$this->device_unique_id = substr($device_unique_id, 0, min(20, strlen($device_unique_id)));
+		$this->anid = substr($anid, 0, min(32, strlen($anid)));
 	}
 	
-	public function getDeviceUniqueId()
+	public function getAnid()
 	{
-		return $this->device_unique_id;
+		return $this->anid;
 	}
 	
 	public function setNickname($nickname)
@@ -131,8 +131,8 @@ final class User extends Xml_Serializable_Object implements Db_Object
 	public function create()
 	{
 		$dbh = Db_Singleton::instance();
-		$sth = $dbh->prepare("INSERT INTO user_table (device_unique_id, nickname) VALUES (:device_unique_id, :nickname)");
-		$flag = $sth->execute(array('device_unique_id' => $this->getDeviceUniqueId(), 'nickname' => $this->getNickname()));
+		$sth = $dbh->prepare("INSERT INTO user_table (anid, nickname) VALUES (:anid, :nickname)");
+		$flag = $sth->execute(array('anid' => $this->getAnid(), 'nickname' => $this->getNickname()));
 		
 		if($flag)
 		{
@@ -145,8 +145,8 @@ final class User extends Xml_Serializable_Object implements Db_Object
 	public function read()
 	{
 		$dbh = Db_Singleton::instance();
-		$sth = $dbh->prepare("SELECT * FROM user_table WHERE (id = :id) OR (device_unique_id = :device_unique_id) OR (nickname = :nickname) LIMIT 0, 1");
-		$flag = $sth->execute(array('id' => $this->getId(), 'device_unique_id' => $this->getDeviceUniqueId(), 'nickname' => $this->getNickname()));
+		$sth = $dbh->prepare("SELECT * FROM user_table WHERE (id = :id) OR (anid = :anid) OR (nickname = :nickname) LIMIT 0, 1");
+		$flag = $sth->execute(array('id' => $this->getId(), 'anid' => $this->getAnid(), 'nickname' => $this->getNickname()));
 		
 		if($flag)
 		{
@@ -156,7 +156,7 @@ final class User extends Xml_Serializable_Object implements Db_Object
 			if($row)
 			{
 				$this->setId($row['id']);
-				$this->setDeviceUniqueId($row['device_unique_id']);
+				$this->setAnid($row['anid']);
 				$this->setNickname($row['nickname']);
 			}
 		}
@@ -167,8 +167,8 @@ final class User extends Xml_Serializable_Object implements Db_Object
 	public function update()
 	{
 		$dbh = Db_Singleton::instance();
-		$sth = $dbh->prepare("UPDATE user_table SET device_unique_id = :device_unique_id, nickname = :nickname WHERE id = :id");
-		$flag = $sth->execute(array('id' => $this->getId(), 'device_unique_id' => $this->getDeviceUniqueId(), 'nickname' => $this->getNickname()));
+		$sth = $dbh->prepare("UPDATE user_table SET anid = :anid, nickname = :nickname WHERE id = :id");
+		$flag = $sth->execute(array('id' => $this->getId(), 'anid' => $this->getAnid(), 'nickname' => $this->getNickname()));
 		
 		return $flag;
 	}
