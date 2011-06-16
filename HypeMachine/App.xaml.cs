@@ -12,11 +12,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Advertising.Mobile.UI;
 
 namespace HypeMachine
 {
     public partial class App : Application
     {
+        
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -28,6 +30,7 @@ namespace HypeMachine
         /// </summary>
         public App()
         {
+            AdControl.TestMode = false;
             // Global handler for uncaught exceptions. 
             UnhandledException += Application_UnhandledException;
 

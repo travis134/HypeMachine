@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.IO.IsolatedStorage;
 using System.Windows.Media.Imaging;
+using Microsoft.Advertising.Mobile.UI;
 
 namespace HypeMachine
 {
@@ -29,9 +30,37 @@ namespace HypeMachine
         private User currentUser;
         private String anid;
 
+        private Dictionary<String, BitmapImage> barImages = new Dictionary<String, BitmapImage>()
+        {
+            {"minusFull", new BitmapImage(new Uri("bar/minusFull.png", UriKind.Relative))},
+            {"minusThree", new BitmapImage(new Uri("bar/minusThree.png", UriKind.Relative))},
+            {"minusTwo", new BitmapImage(new Uri("bar/minusTwo.png", UriKind.Relative))},
+            {"minusOne", new BitmapImage(new Uri("bar/minusOne.png", UriKind.Relative))},
+            {"stale", new BitmapImage(new Uri("bar/stale.png", UriKind.Relative))},
+            {"plusOne", new BitmapImage(new Uri("bar/plusOne.png", UriKind.Relative))},
+            {"plusTwo", new BitmapImage(new Uri("bar/plusTwo.png", UriKind.Relative))},
+            {"plusThree", new BitmapImage(new Uri("bar/plusThree.png", UriKind.Relative))},
+            {"plusFull", new BitmapImage(new Uri("bar/plusFull.png", UriKind.Relative))},
+            {"minus", new BitmapImage(new Uri("bar/minus.png", UriKind.Relative))},
+            {"plus", new BitmapImage(new Uri("bar/plus.png", UriKind.Relative))},
+
+        };
+
         public MainPage()
         {
             InitializeComponent();
+
+            AdControl hypeMachineAd = new AdControl() { ApplicationId = "4d3667ee-44c1-494c-929d-5e661b011918", AdUnitId = "10019312"};
+            ((Grid)FindName("LayoutRoot")).Children.Add(hypeMachineAd);
+            Grid.SetRow(hypeMachineAd, 1);
+
+            bool darkTheme = ((Visibility)Application.Current.Resources["PhoneDarkThemeVisibility"] == Visibility.Visible);
+            Pivot mainView = (Pivot)FindName("mainView");
+            if (!darkTheme)
+            {
+                mainView.Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri("PanoramaBackground.png", UriKind.Relative)), Stretch=Stretch.None };
+                mainView.Foreground = new SolidColorBrush(Colors.Black);
+            }
 
             object tempAnid;
             UserExtendedProperties.TryGetValue("ANID", out tempAnid);
@@ -43,6 +72,7 @@ namespace HypeMachine
 
             this.gamesList = new Dictionary<String, Game>();
             gamesStorageHelper = new StorageHelper<Game>("Games.xml", "Stale.txt");
+            
 
             /*
             object tempFirstRun;
@@ -80,39 +110,26 @@ namespace HypeMachine
 
         private void updateUi()
         {
-            StackPanel hypePanel = (StackPanel)FindName("HypePanel");
-
-            Boolean alternate = false;
+            Boolean alternate = true;
 
             foreach (KeyValuePair<String, Game> game in this.gamesList)
             {
-                Border border = new Border() { BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 0, 0, 0)), BorderThickness = new System.Windows.Thickness(2), CornerRadius = new System.Windows.CornerRadius(30), Margin = new System.Windows.Thickness(0, 0, 0, 40) };
+                Border border = new Border() { BorderThickness = new System.Windows.Thickness(2), /*CornerRadius = new System.Windows.CornerRadius(30),*/ Margin = new System.Windows.Thickness(0, 0, 0, 10) };
 
-                RowDefinition rowTopPadding = new RowDefinition() { Height = new System.Windows.GridLength(20) };
+                RowDefinition rowTopPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
                 RowDefinition rowBottomPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
 
                 RowDefinition rowTop = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
                 RowDefinition rowBottom = new RowDefinition() { Height = new System.Windows.GridLength(76) };
-                Grid tempRow = new Grid() {};
-
-                if (alternate)
-                {
-                    border.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(100, 105, 105, 105));
-                }
-                else
-                {
-                    border.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(100, 200, 200, 200));
-                }
-
-                alternate = !alternate;
+                Grid tempRow = new Grid() {};                
 
                 tempRow.RowDefinitions.Add(rowTopPadding);
                 tempRow.RowDefinitions.Add(rowTop);
                 tempRow.RowDefinitions.Add(rowBottom);
                 tempRow.RowDefinitions.Add(rowBottomPadding);
 
-                ColumnDefinition gameLeftPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(20) };
-                ColumnDefinition gameRightPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(20) };
+                ColumnDefinition gameLeftPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
+                ColumnDefinition gameRightPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
 
                 ColumnDefinition gameLeft = new ColumnDefinition() { Width = new System.Windows.GridLength(100) };
                 ColumnDefinition gameRight = new ColumnDefinition() { Width = new System.Windows.GridLength(100, GridUnitType.Star) };
@@ -128,18 +145,32 @@ namespace HypeMachine
                 tempInfo.RowDefinitions.Add(infoTop);
                 tempInfo.RowDefinitions.Add(infoBottom);
 
-                TextBlock tempTitle = new TextBlock {Foreground= new SolidColorBrush(Colors.Black), Text = game.Value.Title.ToString(), FontWeight=System.Windows.FontWeights.ExtraBold ,FontSize = 28, TextWrapping = System.Windows.TextWrapping.Wrap };
-                TextBlock tempDescription = new TextBlock {Foreground= new SolidColorBrush(Color.FromArgb(255,20,20,20)), Text = game.Value.ShortSummary + "Tap for more info and comments", FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
+                TextBlock tempTitle = new TextBlock {Text = game.Value.Title.ToString().ToUpper(), FontWeight=System.Windows.FontWeights.ExtraBold ,FontSize = 28, TextWrapping = System.Windows.TextWrapping.Wrap };
+                TextBlock tempDescription = new TextBlock {Text = (game.Value.ShortSummary + "Tap for more info and comments").ToLower(), FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
 
                 Grid.SetRow(tempTitle, 0);
                 tempInfo.Children.Add(tempTitle);
                 Grid.SetRow(tempDescription, 1);
                 tempInfo.Children.Add(tempDescription);
 
-                Border imageBorder = new Border(){Width = 100, Height = 100, BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 0, 0, 0)), BorderThickness = new System.Windows.Thickness(3), CornerRadius = new System.Windows.CornerRadius(5)};
-                //Rectangle tempImageContainer = new Rectangle() { Width = 100, Height = 100 };
-                Image tempImage = new Image() { Source = new BitmapImage(game.Value.Image), Stretch = System.Windows.Media.Stretch.UniformToFill };
-                //tempImageContainer.Fill = tempImage;
+                Border imageBorder = new Border() { Width = 100, Height = 100, BorderThickness = new System.Windows.Thickness(3), VerticalAlignment = System.Windows.VerticalAlignment.Top, Margin= new Thickness(0,10,0,0) };
+
+                if (alternate)
+                {
+                    tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                    tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                    border.Background = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
+                    imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]); 
+                }
+                else
+                {
+                    tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
+                    tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
+                    border.Background = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                    imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
+                }
+
+                Image tempImage = new Image() { Source = new BitmapImage(game.Value.Image), Stretch = System.Windows.Media.Stretch.UniformToFill};
 
                 imageBorder.Child = tempImage;
 
@@ -162,52 +193,52 @@ namespace HypeMachine
                 tempBar.ColumnDefinitions.Add(barPlus);
 
                 Button minusButton = new Button() { Width = 63, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
-                Image minusImage = new Image() { Source = new BitmapImage(new Uri("bar/minus.png", UriKind.Relative)), Width = 63, Height = 76};
+                Image minusImage = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
                 minusButton.Content = minusImage;
                 minusButton.ClickMode = ClickMode.Release;
                 minusButton.Click += new RoutedEventHandler(minusButton_Click); 
 
                 Rectangle barContainer = new Rectangle() { Width = 224, Height = 76 };
-                ImageBrush barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/barStale.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                ImageBrush barImage = new ImageBrush() { ImageSource = this.barImages["stale"], Stretch = System.Windows.Media.Stretch.Fill };
                 
                 double tempRand = rand.NextDouble();
-                if (tempRand < .11)
+                if (game.Value.HypeScore >= .2 && game.Value.HypeScore < .4)
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/plusOne.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["plusOne"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .11 && tempRand < .22)
+                else if (game.Value.HypeScore >= .4 && game.Value.HypeScore < .6)
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/plusTwo.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["plusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .22 && tempRand < .33)
+                else if (game.Value.HypeScore >= .6 && game.Value.HypeScore < .8)
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/plusThree.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["plusThree"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .33 && tempRand < .44)
+                else if (game.Value.HypeScore >= .8)
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/plusFull.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["plusFull"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .44 && tempRand < .55)
+                else if ((game.Value.HypeScore <= -.2 && game.Value.HypeScore > -.4))
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/minusOne.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["minusOne"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .55 && tempRand < .66)
+                else if ((game.Value.HypeScore <= -.4 && game.Value.HypeScore > -.6))
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/minusTwo.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["minusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .66 && tempRand < .77)
+                else if ((game.Value.HypeScore <= -.6 && game.Value.HypeScore > -.8))
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/minusThree.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["minusThree"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
-                else if (tempRand >= .77 && tempRand < .88)
+                else if (game.Value.HypeScore <= -.8)
                 {
-                    barImage = new ImageBrush() { ImageSource = new BitmapImage(new Uri("bar/minusFull.png", UriKind.Relative)), Stretch = System.Windows.Media.Stretch.Fill };
+                    barImage = new ImageBrush() { ImageSource = this.barImages["minusFull"], Stretch = System.Windows.Media.Stretch.Fill };
                 }
 
                 barContainer.Fill = barImage;
 
                 Button plusButton = new Button() { Width = 70, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
-                Image plusImage = new Image() { Source = new BitmapImage(new Uri("bar/plus.png", UriKind.Relative)), Width = 70, Height = 76};
+                Image plusImage = new Image() { Source = this.barImages["plus"], Width = 70, Height = 76 };
                 plusButton.Content = plusImage;
 
                 plusButton.ClickMode = ClickMode.Release;
@@ -227,8 +258,12 @@ namespace HypeMachine
 
                 border.Child = tempRow;
 
+                StackPanel hypePanel = (StackPanel)FindName("HypePanel");
                 hypePanel.Children.Add(border);
+
+                alternate = !alternate;
             }
+            ((Grid)FindName("LayoutRoot")).Children.Remove((Grid)FindName("Loading"));
         }
 
         void plusButton_Click(object sender, RoutedEventArgs e)
@@ -236,11 +271,11 @@ namespace HypeMachine
             Button temp = (Button)sender;
             if (temp.IsPressed)
             {
-                temp.Content = new Image() { Source = new BitmapImage(new Uri("bar/plusPressed.png", UriKind.Relative)), Width = 70, Height = 76 };
+                temp.Content = new Image() { Source = this.barImages["plusPressed"], Width = 70, Height = 76 };
             }
             else
             {
-                temp.Content = new Image() { Source = new BitmapImage(new Uri("bar/plus.png", UriKind.Relative)), Width = 70, Height = 76 };
+                temp.Content = new Image() { Source = this.barImages["plus"], Width = 70, Height = 76 };
             }
         }
 
@@ -249,11 +284,11 @@ namespace HypeMachine
             Button temp = (Button)sender;
             if (temp.IsPressed)
             {
-                temp.Content = new Image() { Source = new BitmapImage(new Uri("bar/minusPressed.png", UriKind.Relative)), Width = 63, Height = 76 };
+                temp.Content = new Image() { Source = this.barImages["minusPressed"], Width = 63, Height = 76 };
             }
             else
             {
-                temp.Content = new Image() { Source = new BitmapImage(new Uri("bar/minus.png", UriKind.Relative)), Width = 63, Height = 76 };
+                temp.Content = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
             }
         }
 
