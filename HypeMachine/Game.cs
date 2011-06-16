@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace HypeMachine
 {
+    [DataContract(Name = "Game")]
     public class Game
     {
         private static readonly Uri BASE_URI = new Uri("http://www.gamestop.com");
@@ -16,7 +17,7 @@ namespace HypeMachine
         private static readonly Regex SUMMARY_REGEX = new Regex(@"<br> (?<SUMMARY>.*)");
 
         private uint id;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Id")]
         public uint Id
         {
             get
@@ -30,7 +31,7 @@ namespace HypeMachine
         }
 
         private List<Hype> hype;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Hype")]
         public List<Hype> Hype
         {
             get
@@ -44,7 +45,7 @@ namespace HypeMachine
         }
 
         private List<Aftermath> aftermath;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Aftermath")]
         public List<Aftermath> Aftermath
         {
             get
@@ -57,7 +58,6 @@ namespace HypeMachine
             }
         }
 
-        [XmlIgnoreAttribute]
         public float HypeScore
         {
             get
@@ -85,7 +85,6 @@ namespace HypeMachine
             }
         }
 
-        [XmlIgnoreAttribute]
         public float AftermathScore
         {
             get
@@ -114,6 +113,7 @@ namespace HypeMachine
         }
 
         private List<Comment> comments;
+        [DataMember(Name = "Comments")]
         public List<Comment> Comments
         {
             get
@@ -127,7 +127,7 @@ namespace HypeMachine
         }
 
         private String guidString;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "GuidString")]
         public String GuidString
         {
             get
@@ -142,7 +142,7 @@ namespace HypeMachine
         }
 
         private Uri guidUri;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "GuidUri")]
         public Uri GuidUri
         {
             get
@@ -157,7 +157,7 @@ namespace HypeMachine
         }
 
         private Uri link;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Link")]
         public Uri Link
         {
             get
@@ -171,7 +171,7 @@ namespace HypeMachine
         }
 
         private String category;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Category")]
         public String Category
         {
             get
@@ -185,7 +185,7 @@ namespace HypeMachine
         }
 
         private String title;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Title")]
         public String Title
         {
             get
@@ -199,7 +199,7 @@ namespace HypeMachine
         }
 
         private Uri image;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Image")]
         public Uri Image
         {
             get
@@ -213,7 +213,7 @@ namespace HypeMachine
         }
 
         private float price;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Price")]
         public float Price
         {
             get
@@ -227,7 +227,7 @@ namespace HypeMachine
         }
 
         private string summary;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Summary")]
         public String Summary
         {
             get
@@ -241,7 +241,7 @@ namespace HypeMachine
         }
 
         private DateTime releaseDate;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "ReleaseDate")]
         public DateTime ReleaseDate
         {
             get
@@ -255,7 +255,7 @@ namespace HypeMachine
         }
 
         private String description;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "Description")]
         public String Description
         {
             get
@@ -285,7 +285,7 @@ namespace HypeMachine
         }
 
         private DateTime pubDate;
-        [XmlIgnoreAttribute]
+        [DataMember(Name = "PubDate")]
         public DateTime PubDate
         {
             get

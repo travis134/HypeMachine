@@ -51,6 +51,7 @@
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -96,6 +97,21 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="PanoramaBackground.png" />
+    <Resource Include="hypebar.png" />
+    <Resource Include="bar\barStale.png" />
+    <Resource Include="bar\minus.png" />
+    <Resource Include="bar\minusFull.png" />
+    <Resource Include="bar\minusOne.png" />
+    <Resource Include="bar\minusPressed.png" />
+    <Resource Include="bar\minusThree.png" />
+    <Resource Include="bar\minusTwo.png" />
+    <Resource Include="bar\plus.png" />
+    <Resource Include="bar\plusFull.png" />
+    <Resource Include="bar\plusOne.png" />
+    <Resource Include="bar\plusPressed.png" />
+    <Resource Include="bar\plusThree.png" />
+    <Resource Include="bar\plusTwo.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

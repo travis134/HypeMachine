@@ -8,16 +8,83 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace HypeMachine
 {
+    [DataContract(Name = "Comment")]
     public class Comment
     {
-        public uint Id { get; set; }
-        public uint GameId { get; set; }
-        public uint UserId { get; set; }
-        public String Content { get; set; }
-        public DateTime Date { get; set; }
+        private uint id;
+        [DataMember(Name = "Id")]
+        public uint Id
+        {
+            get
+            {
+                return this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
+
+        private uint gameId;
+        [DataMember(Name = "GameId")]
+        public uint GameId
+        {
+            get
+            {
+                return this.gameId;
+            }
+            set
+            {
+                this.gameId = value;
+            }
+        }
+
+        private uint userId;
+        [DataMember(Name = "UserId")]
+        public uint UserId
+        {
+            get
+            {
+                return this.userId;
+            }
+            set
+            {
+                this.userId = value;
+            }
+        }
+
+        private String content;
+        [DataMember(Name = "Content")]
+        public String Content
+        {
+            get
+            {
+                return this.content;
+            }
+            set
+            {
+                this.content = value;
+            }
+        }
+
+        private DateTime date;
+        [DataMember(Name = "Date")]
+        public DateTime Date
+        {
+            get
+            {
+                return this.date;
+            }
+            set
+            {
+                this.date = value;
+            }
+        }
 
         public Comment() { }
         public Comment(uint id, uint gameId, uint userId, String comment, DateTime date)

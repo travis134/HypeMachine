@@ -8,13 +8,30 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace HypeMachine
 {
+    [DataContract(Name = "User")]
     public class User
     {
-        public uint Id { get; set; }
+        private uint id;
+        [DataMember(Name = "Id")]
+        public uint Id
+        {
+            get
+            {
+                return this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
+
         private char[] deviceUniqueId;
+        [DataMember(Name = "DeviceUniqueId")]
         public String DeviceUniqueId
         {
             get
@@ -26,7 +43,9 @@ namespace HypeMachine
                 this.deviceUniqueId = value.ToCharArray();
             }
         }
+
         private char[] nickname;
+        [DataMember(Name = "Nickname")]
         public String Nickname
         {
             get

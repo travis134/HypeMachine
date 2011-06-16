@@ -11,8 +11,8 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Runtime.Serialization;
 using System.Xml;
-using System.Xml.Serialization;
 
 namespace HypeMachine
 {
@@ -52,9 +52,9 @@ namespace HypeMachine
             {
                 IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
                 IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.OpenOrCreate);
-                reader = new StreamReader(file);
-                XmlSerializer xs = new XmlSerializer(typeof(List<T>));
-                genericList.AddRange((List<T>)xs.Deserialize(reader));
+                var xs = new DataContractSerializer(typeof(List<T>));
+                XmlDictionaryReader reader2 = XmlDictionaryReader.CreateDictionaryReader(XmlReader.Create(file));
+                genericList.AddRange((List<T>)xs.ReadObject(reader2, false));
                 reader.Close();
             }
             catch (Exception e)
@@ -77,67 +77,8 @@ namespace HypeMachine
                 IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
                 IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.Create);
                 writer = new StreamWriter(file);
-                XmlSerializer xs = new XmlSerializer(typeof(List<T>));
-                xs.Serialize(writer, genericList);
-                writer.Close();
-
-                if (this.lastModifiedFileName != null)
-                {
-                    if (!this.lastModifiedFileName.Equals(String.Empty))
-                    {
-                        IsolatedStorageFileStream lastModifiedFile = isoStorage.OpenFile(this.lastModifiedFileName, FileMode.Create);
-                        writer = new StreamWriter(lastModifiedFile);
-                        writer.WriteLine(DateTime.Now.ToString());
-                        writer.Close();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
-            finally
-            {
-                if (writer != null)
-                    writer.Dispose();
-            }
-        }
-
-        public T Load()
-        {
-            T genericObject = default(T);
-            TextReader reader = null;
-            try
-            {
-                IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
-                IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.OpenOrCreate);
-                reader = new StreamReader(file);
-                XmlSerializer xs = new XmlSerializer(typeof(T));
-                genericObject = (T)xs.Deserialize(reader);
-                reader.Close();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Dispose();
-            }
-            return genericObject;
-        }
-
-        public void Save(T genericObject)
-        {
-            TextWriter writer = null;
-            try
-            {
-                IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
-                IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.Create);
-                writer = new StreamWriter(file);
-                XmlSerializer xs = new XmlSerializer(typeof(T));
-                xs.Serialize(writer, genericObject);
+                var xs = new DataContractSerializer(typeof(List<T>));
+                xs.WriteObject(file, genericList);
                 writer.Close();
 
                 if (this.lastModifiedFileName != null)

@@ -8,15 +8,68 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Runtime.Serialization;
 
 namespace HypeMachine
 {
+    [DataContract(Name = "Rating")]
     public abstract class Rating
     {
-        public uint Id { get; set; }
-        public uint GameId { get; set; }
-        public uint UserId { get; set; }
-        public Boolean Score { get; set; }
+        private uint id;
+        [DataMember(Name = "Id")]
+        public uint Id
+        {
+            get
+            {
+                return this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
+
+        private uint gameId;
+        [DataMember(Name = "GameId")]
+        public uint GameId
+        {
+            get
+            {
+                return this.gameId;
+            }
+            set
+            {
+                this.gameId = value;
+            }
+        }
+
+        private uint userId;
+        [DataMember(Name = "UserId")]
+        public uint UserId
+        {
+            get
+            {
+                return this.userId;
+            }
+            set
+            {
+                this.userId = value;
+            }
+        }
+
+        private Boolean score;
+        [DataMember(Name = "Score")]
+        public Boolean Score
+        {
+            get
+            {
+                return this.score;
+            }
+            set
+            {
+                this.score = value;
+            }
+        }
 
         public Rating() { }
         public Rating(uint id, uint gameId, uint userId, Boolean score)

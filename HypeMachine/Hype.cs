@@ -8,9 +8,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Runtime.Serialization;
 
 namespace HypeMachine
 {
+    [DataContract(Name = "Hype")]
     public class Hype : Rating
     {
         public Hype() : base() { }

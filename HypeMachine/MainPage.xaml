@@ -10,17 +10,43 @@
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
+    Foreground="{StaticResource PhoneAccentBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
     shell:SystemTray.IsVisible="False">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--Panorama control-->
-        <controls:Panorama Title="concerts" Name="mainView" Grid.Row="0">
+        <controls:Panorama Foreground="Black" Title="hype machine" Name="mainView" Grid.Row="0">
             <controls:Panorama.Background>
                 <ImageBrush ImageSource="PanoramaBackground.png"/>
             </controls:Panorama.Background>
+            <controls:PanoramaItem Margin="0,0,-30,80">
+                <Grid x:Name="HypeGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="hype it or hate it" Grid.Row="0"/>
+                    <ScrollViewer x:Name="ContentScroll" Grid.Row="1">
+                        <StackPanel x:Name="HypePanel" Margin="0" Orientation="Vertical">
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </controls:PanoramaItem>
+            <controls:PanoramaItem Margin="0,0,0,80">
+                <ScrollViewer>
+                    <StackPanel Name="Aftermath" Orientation="Vertical">
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PanoramaItem>
+            <controls:PanoramaItem Margin="0,0,0,80">
+                <ScrollViewer>
+                    <StackPanel Name="Comments" Orientation="Vertical">
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PanoramaItem>
         </controls:Panorama>
     </Grid>
  
