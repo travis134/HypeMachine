@@ -43,7 +43,8 @@ namespace HypeMachine
             {"plusFull", new BitmapImage(new Uri("bar/plusFull.png", UriKind.Relative))},
             {"minus", new BitmapImage(new Uri("bar/minus.png", UriKind.Relative))},
             {"plus", new BitmapImage(new Uri("bar/plus.png", UriKind.Relative))},
-
+            {"minusPressed", new BitmapImage(new Uri("bar/minusPressed.png", UriKind.Relative))},
+            {"plusPressed", new BitmapImage(new Uri("bar/plusPressed.png", UriKind.Relative))}
         };
 
         public MainPage()
@@ -114,156 +115,161 @@ namespace HypeMachine
 
             foreach (KeyValuePair<String, Game> game in this.gamesList)
             {
-                Border border = new Border() { BorderThickness = new System.Windows.Thickness(2), /*CornerRadius = new System.Windows.CornerRadius(30),*/ Margin = new System.Windows.Thickness(0, 0, 0, 10) };
-
-                RowDefinition rowTopPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
-                RowDefinition rowBottomPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
-
-                RowDefinition rowTop = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
-                RowDefinition rowBottom = new RowDefinition() { Height = new System.Windows.GridLength(76) };
-                Grid tempRow = new Grid() {};                
-
-                tempRow.RowDefinitions.Add(rowTopPadding);
-                tempRow.RowDefinitions.Add(rowTop);
-                tempRow.RowDefinitions.Add(rowBottom);
-                tempRow.RowDefinitions.Add(rowBottomPadding);
-
-                ColumnDefinition gameLeftPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
-                ColumnDefinition gameRightPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
-
-                ColumnDefinition gameLeft = new ColumnDefinition() { Width = new System.Windows.GridLength(100) };
-                ColumnDefinition gameRight = new ColumnDefinition() { Width = new System.Windows.GridLength(100, GridUnitType.Star) };
-                Grid tempGame = new Grid() { Margin = new System.Windows.Thickness(0, 0, 0, 20) };
-                tempGame.ColumnDefinitions.Add(gameLeftPadding);
-                tempGame.ColumnDefinitions.Add(gameLeft);
-                tempGame.ColumnDefinitions.Add(gameRight);
-                tempGame.ColumnDefinitions.Add(gameRightPadding);
-
-                RowDefinition infoTop = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
-                RowDefinition infoBottom = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
-                Grid tempInfo = new Grid() { Margin = new System.Windows.Thickness(10,0,0,0) };
-                tempInfo.RowDefinitions.Add(infoTop);
-                tempInfo.RowDefinitions.Add(infoBottom);
-
-                TextBlock tempTitle = new TextBlock {Text = game.Value.Title.ToString().ToUpper(), FontWeight=System.Windows.FontWeights.ExtraBold ,FontSize = 28, TextWrapping = System.Windows.TextWrapping.Wrap };
-                TextBlock tempDescription = new TextBlock {Text = (game.Value.ShortSummary + "Tap for more info and comments").ToLower(), FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
-
-                Grid.SetRow(tempTitle, 0);
-                tempInfo.Children.Add(tempTitle);
-                Grid.SetRow(tempDescription, 1);
-                tempInfo.Children.Add(tempDescription);
-
-                Border imageBorder = new Border() { Width = 100, Height = 100, BorderThickness = new System.Windows.Thickness(3), VerticalAlignment = System.Windows.VerticalAlignment.Top, Margin= new Thickness(0,10,0,0) };
-
-                if (alternate)
-                {
-                    tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
-                    tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
-                    border.Background = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
-                    imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]); 
-                }
-                else
-                {
-                    tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
-                    tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
-                    border.Background = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
-                    imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
-                }
-
-                Image tempImage = new Image() { Source = new BitmapImage(game.Value.Image), Stretch = System.Windows.Media.Stretch.UniformToFill};
-
-                imageBorder.Child = tempImage;
-
-                Grid.SetColumn(imageBorder, 1);
-
-                tempGame.Children.Add(imageBorder);
-
-                Grid.SetColumn(tempInfo, 2);
-                tempGame.Children.Add(tempInfo);
-
-                Grid.SetRow(tempGame, 1);
-                tempRow.Children.Add(tempGame);
-
-                ColumnDefinition barMinus = new ColumnDefinition() { Width = new System.Windows.GridLength(63) };
-                ColumnDefinition barFill = new ColumnDefinition() { Width = new System.Windows.GridLength(224) };
-                ColumnDefinition barPlus = new ColumnDefinition() { Width = new System.Windows.GridLength(70) };
-                Grid tempBar = new Grid() {HorizontalAlignment = System.Windows.HorizontalAlignment.Center};
-                tempBar.ColumnDefinitions.Add(barMinus);
-                tempBar.ColumnDefinitions.Add(barFill);
-                tempBar.ColumnDefinitions.Add(barPlus);
-
-                Button minusButton = new Button() { Width = 63, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
-                Image minusImage = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
-                minusButton.Content = minusImage;
-                minusButton.ClickMode = ClickMode.Release;
-                minusButton.Click += new RoutedEventHandler(minusButton_Click); 
-
-                Rectangle barContainer = new Rectangle() { Width = 224, Height = 76 };
-                ImageBrush barImage = new ImageBrush() { ImageSource = this.barImages["stale"], Stretch = System.Windows.Media.Stretch.Fill };
-                
-                double tempRand = rand.NextDouble();
-                if (game.Value.HypeScore >= .2 && game.Value.HypeScore < .4)
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["plusOne"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if (game.Value.HypeScore >= .4 && game.Value.HypeScore < .6)
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["plusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if (game.Value.HypeScore >= .6 && game.Value.HypeScore < .8)
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["plusThree"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if (game.Value.HypeScore >= .8)
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["plusFull"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if ((game.Value.HypeScore <= -.2 && game.Value.HypeScore > -.4))
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["minusOne"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if ((game.Value.HypeScore <= -.4 && game.Value.HypeScore > -.6))
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["minusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if ((game.Value.HypeScore <= -.6 && game.Value.HypeScore > -.8))
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["minusThree"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-                else if (game.Value.HypeScore <= -.8)
-                {
-                    barImage = new ImageBrush() { ImageSource = this.barImages["minusFull"], Stretch = System.Windows.Media.Stretch.Fill };
-                }
-
-                barContainer.Fill = barImage;
-
-                Button plusButton = new Button() { Width = 70, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
-                Image plusImage = new Image() { Source = this.barImages["plus"], Width = 70, Height = 76 };
-                plusButton.Content = plusImage;
-
-                plusButton.ClickMode = ClickMode.Release;
-                plusButton.Click += new RoutedEventHandler(plusButton_Click);
-
-                Grid.SetColumn(minusButton, 0);
-                tempBar.Children.Add(minusButton);
-
-                Grid.SetColumn(barContainer, 1);
-                tempBar.Children.Add(barContainer);
-
-                Grid.SetColumn(plusButton, 2);
-                tempBar.Children.Add(plusButton);
-
-                Grid.SetRow(tempBar, 2);
-                tempRow.Children.Add(tempBar);
-
-                border.Child = tempRow;
-
                 StackPanel hypePanel = (StackPanel)FindName("HypePanel");
-                hypePanel.Children.Add(border);
+                hypePanel.Children.Add(gameToBorder(game.Value,alternate));
 
                 alternate = !alternate;
             }
             ((Grid)FindName("LayoutRoot")).Children.Remove((Grid)FindName("Loading"));
+        }
+
+        Border gameToBorder(Game game, Boolean alternate)
+        {
+            Border border = new Border() { BorderThickness = new System.Windows.Thickness(2), /*CornerRadius = new System.Windows.CornerRadius(30),*/ Margin = new System.Windows.Thickness(0, 0, 0, 10) };
+
+            RowDefinition rowTopPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
+            RowDefinition rowBottomPadding = new RowDefinition() { Height = new System.Windows.GridLength(10) };
+
+            RowDefinition rowTop = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
+            RowDefinition rowBottom = new RowDefinition() { Height = new System.Windows.GridLength(76) };
+            Grid tempRow = new Grid() { };
+
+            tempRow.RowDefinitions.Add(rowTopPadding);
+            tempRow.RowDefinitions.Add(rowTop);
+            tempRow.RowDefinitions.Add(rowBottom);
+            tempRow.RowDefinitions.Add(rowBottomPadding);
+
+            ColumnDefinition gameLeftPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
+            ColumnDefinition gameRightPadding = new ColumnDefinition() { Width = new System.Windows.GridLength(10) };
+
+            ColumnDefinition gameLeft = new ColumnDefinition() { Width = new System.Windows.GridLength(100) };
+            ColumnDefinition gameRight = new ColumnDefinition() { Width = new System.Windows.GridLength(100, GridUnitType.Star) };
+            Grid tempGame = new Grid() { Margin = new System.Windows.Thickness(0, 0, 0, 20) };
+            tempGame.ColumnDefinitions.Add(gameLeftPadding);
+            tempGame.ColumnDefinitions.Add(gameLeft);
+            tempGame.ColumnDefinitions.Add(gameRight);
+            tempGame.ColumnDefinitions.Add(gameRightPadding);
+
+            RowDefinition infoTop = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
+            RowDefinition infoBottom = new RowDefinition() { Height = new System.Windows.GridLength(0, GridUnitType.Auto) };
+            Grid tempInfo = new Grid() { Margin = new System.Windows.Thickness(10, 0, 0, 0) };
+            tempInfo.RowDefinitions.Add(infoTop);
+            tempInfo.RowDefinitions.Add(infoBottom);
+
+            TextBlock tempTitle = new TextBlock { Text = game.Title.ToString().ToUpper(), FontWeight = System.Windows.FontWeights.ExtraBold, FontSize = 28, TextWrapping = System.Windows.TextWrapping.Wrap };
+            TextBlock tempDescription = new TextBlock { Text = (game.ShortSummary + "Tap for more info and comments").ToLower(), FontSize = 20, TextWrapping = System.Windows.TextWrapping.Wrap };
+
+            Grid.SetRow(tempTitle, 0);
+            tempInfo.Children.Add(tempTitle);
+            Grid.SetRow(tempDescription, 1);
+            tempInfo.Children.Add(tempDescription);
+
+            Border imageBorder = new Border() { Width = 100, Height = 100, BorderThickness = new System.Windows.Thickness(3), VerticalAlignment = System.Windows.VerticalAlignment.Top, Margin = new Thickness(0, 10, 0, 0) };
+
+            if (alternate)
+            {
+                tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                border.Background = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
+                imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+            }
+            else
+            {
+                tempTitle.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
+                tempDescription.Foreground = new SolidColorBrush((Color)Resources["PhoneBackgroundColor"]);
+                border.Background = new SolidColorBrush((Color)Resources["PhoneForegroundColor"]);
+                imageBorder.BorderBrush = new SolidColorBrush((Color)Resources["PhoneAccentColor"]);
+            }
+
+            Image tempImage = new Image() { Source = new BitmapImage(game.Image), Stretch = System.Windows.Media.Stretch.UniformToFill };
+
+            imageBorder.Child = tempImage;
+
+            Grid.SetColumn(imageBorder, 1);
+
+            tempGame.Children.Add(imageBorder);
+
+            Grid.SetColumn(tempInfo, 2);
+            tempGame.Children.Add(tempInfo);
+
+            Grid.SetRow(tempGame, 1);
+            tempRow.Children.Add(tempGame);
+
+            ColumnDefinition barMinus = new ColumnDefinition() { Width = new System.Windows.GridLength(63) };
+            ColumnDefinition barFill = new ColumnDefinition() { Width = new System.Windows.GridLength(224) };
+            ColumnDefinition barPlus = new ColumnDefinition() { Width = new System.Windows.GridLength(70) };
+            Grid tempBar = new Grid() { HorizontalAlignment = System.Windows.HorizontalAlignment.Center };
+            tempBar.ColumnDefinitions.Add(barMinus);
+            tempBar.ColumnDefinitions.Add(barFill);
+            tempBar.ColumnDefinitions.Add(barPlus);
+
+            Button minusButton = new Button() { Width = 63, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
+            Image minusImage = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
+            minusButton.Content = minusImage;
+            minusButton.ClickMode = ClickMode.Release;
+            minusButton.Click += new RoutedEventHandler(minusButton_Click);
+
+            Rectangle barContainer = new Rectangle() { Width = 224, Height = 76 };
+            ImageBrush barImage = new ImageBrush() { ImageSource = this.barImages["stale"], Stretch = System.Windows.Media.Stretch.Fill };
+
+            double tempRand = rand.NextDouble();
+            if (game.HypeScore >= .2 && game.HypeScore < .4)
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["plusOne"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if (game.HypeScore >= .4 && game.HypeScore < .6)
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["plusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if (game.HypeScore >= .6 && game.HypeScore < .8)
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["plusThree"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if (game.HypeScore >= .8)
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["plusFull"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if ((game.HypeScore <= -.2 && game.HypeScore > -.4))
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["minusOne"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if ((game.HypeScore <= -.4 && game.HypeScore > -.6))
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["minusTwo"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if ((game.HypeScore <= -.6 && game.HypeScore > -.8))
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["minusThree"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+            else if (game.HypeScore <= -.8)
+            {
+                barImage = new ImageBrush() { ImageSource = this.barImages["minusFull"], Stretch = System.Windows.Media.Stretch.Fill };
+            }
+
+            barContainer.Fill = barImage;
+
+            Button plusButton = new Button() { Width = 70, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
+            Image plusImage = new Image() { Source = this.barImages["plus"], Width = 70, Height = 76 };
+            plusButton.Content = plusImage;
+
+            plusButton.ClickMode = ClickMode.Release;
+            plusButton.Click += new RoutedEventHandler(plusButton_Click);
+
+            Grid.SetColumn(minusButton, 0);
+            tempBar.Children.Add(minusButton);
+
+            Grid.SetColumn(barContainer, 1);
+            tempBar.Children.Add(barContainer);
+
+            Grid.SetColumn(plusButton, 2);
+            tempBar.Children.Add(plusButton);
+
+            Grid.SetRow(tempBar, 2);
+            tempRow.Children.Add(tempBar);
+
+            border.Child = tempRow;
+
+            return border;
         }
 
         void plusButton_Click(object sender, RoutedEventArgs e)
