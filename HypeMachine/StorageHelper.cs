@@ -47,15 +47,15 @@ namespace HypeMachine
         public List<T> LoadAll()
         {
             List<T> genericList = new List<T>();
-            TextReader reader = null;
+            TextReader textReader = null;
             try
             {
                 IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
                 IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.OpenOrCreate);
-                var xs = new DataContractSerializer(typeof(List<T>));
-                XmlDictionaryReader reader2 = XmlDictionaryReader.CreateDictionaryReader(XmlReader.Create(file));
-                genericList.AddRange((List<T>)xs.ReadObject(reader2, false));
-                reader.Close();
+                DataContractSerializer serializer = new DataContractSerializer(typeof(List<T>));
+                XmlDictionaryReader xmlReader = XmlDictionaryReader.CreateDictionaryReader(XmlReader.Create(file));
+                genericList.AddRange((List<T>)serializer.ReadObject(xmlReader, false));
+                textReader.Close();
             }
             catch (Exception e)
             {
@@ -63,32 +63,32 @@ namespace HypeMachine
             }
             finally
             {
-                if (reader != null)
-                    reader.Dispose();
+                if (textReader != null)
+                    textReader.Dispose();
             }
             return genericList;
         }
 
         public void SaveAll(List<T> genericList)
         {
-            TextWriter writer = null;
+            TextWriter textWriter = null;
             try
             {
                 IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
                 IsolatedStorageFileStream file = isoStorage.OpenFile(this.fileName, FileMode.Create);
-                writer = new StreamWriter(file);
-                var xs = new DataContractSerializer(typeof(List<T>));
-                xs.WriteObject(file, genericList);
-                writer.Close();
+                textWriter = new StreamWriter(file);
+                DataContractSerializer serializer = new DataContractSerializer(typeof(List<T>));
+                serializer.WriteObject(file, genericList);
+                textWriter.Close();
 
                 if (this.lastModifiedFileName != null)
                 {
                     if (!this.lastModifiedFileName.Equals(String.Empty))
                     {
                         IsolatedStorageFileStream lastModifiedFile = isoStorage.OpenFile(this.lastModifiedFileName, FileMode.Create);
-                        writer = new StreamWriter(lastModifiedFile);
-                        writer.WriteLine(DateTime.Now.ToString());
-                        writer.Close();
+                        textWriter = new StreamWriter(lastModifiedFile);
+                        textWriter.WriteLine(DateTime.Now.ToString());
+                        textWriter.Close();
                     }
                 }
             }
@@ -98,8 +98,8 @@ namespace HypeMachine
             }
             finally
             {
-                if (writer != null)
-                    writer.Dispose();
+                if (textWriter != null)
+                    textWriter.Dispose();
             }
         }
 
@@ -108,21 +108,21 @@ namespace HypeMachine
             Boolean result = true;
             if (!this.lastModifiedFileName.Equals(String.Empty))
             {
-                TextReader reader = null;
+                TextReader textReader = null;
                 try
                 {
                     IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
                     IsolatedStorageFileStream file = isoStorage.OpenFile(this.lastModifiedFileName, FileMode.OpenOrCreate);
-                    reader = new StreamReader(file);
+                    textReader = new StreamReader(file);
                     DateTime lastModifiedDate;
-                    if (DateTime.TryParse(reader.ReadLine(), out lastModifiedDate))
+                    if (DateTime.TryParse(textReader.ReadLine(), out lastModifiedDate))
                     {
                         if ((DateTime.Now - lastModifiedDate) < shelfLife)
                         {
                             result = false;
                         }
                     }
-                    reader.Close();
+                    textReader.Close();
                 }
                 catch (Exception e)
                 {
@@ -130,8 +130,8 @@ namespace HypeMachine
                 }
                 finally
                 {
-                    if (reader != null)
-                        reader.Dispose();
+                    if (textReader != null)
+                        textReader.Dispose();
                 }
             }
             return result;

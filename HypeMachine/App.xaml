@@ -7,6 +7,13 @@
 
     <!--Application Resources-->
     <Application.Resources>
+        <DataTemplate x:Key="IntroHeaderTemplate">
+            <Grid>
+                <ContentPresenter>
+                    <TextBlock Text="{Binding}" FontSize="80" FontFamily="Segoe WP Black"/>
+                </ContentPresenter>
+            </Grid>
+        </DataTemplate>
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>

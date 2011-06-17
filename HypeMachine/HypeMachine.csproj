@@ -71,11 +71,18 @@
     <Compile Include="Comment.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Hype.cs" />
+    <Compile Include="Intro.xaml.cs">
+      <DependentUpon>Intro.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rating.cs" />
+    <Compile Include="AssetHelper.cs" />
+    <Compile Include="Assets.cs" />
+    <Compile Include="Status.cs" />
+    <Compile Include="Storage.cs" />
     <Compile Include="StorageHelper.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
@@ -84,6 +91,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Intro.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -100,23 +111,24 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="PanoramaBackground.png" />
-    <Resource Include="hypebar.png" />
-    <Resource Include="bar\barStale.png" />
-    <Resource Include="bar\minus.png" />
-    <Resource Include="bar\minusFull.png" />
-    <Resource Include="bar\minusOne.png" />
-    <Resource Include="bar\minusPressed.png" />
-    <Resource Include="bar\minusThree.png" />
-    <Resource Include="bar\minusTwo.png" />
-    <Resource Include="bar\plus.png" />
-    <Resource Include="bar\plusFull.png" />
-    <Resource Include="bar\plusOne.png" />
-    <Resource Include="bar\plusPressed.png" />
-    <Resource Include="bar\plusThree.png" />
-    <Resource Include="bar\plusTwo.png" />
-    <Resource Include="PanoramaBackgroundDark.png" />
-    <Resource Include="bar\stale.png" />
+    <Resource Include="backgrounds\PivotBackground.png" />
+    <Resource Include="bar\bar0.png" />
+    <Resource Include="bar\minusButton.png" />
+    <Resource Include="bar\barNegative4.png" />
+    <Resource Include="bar\barNegative1.png" />
+    <Resource Include="bar\minusButtonPressed.png" />
+    <Resource Include="bar\barNegative3.png" />
+    <Resource Include="bar\barNegative2.png" />
+    <Resource Include="bar\plusButton.png" />
+    <Resource Include="bar\barPositive4.png" />
+    <Resource Include="bar\barPositive1.png" />
+    <Resource Include="bar\plusButtonPressed.png" />
+    <Resource Include="bar\barPositive3.png" />
+    <Resource Include="bar\barPositive2.png" />
+    <Resource Include="backgrounds\PivotBackgroundDark.png" />
+    <Resource Include="backgrounds\IntroBackground.png" />
+    <Resource Include="intro\robot.png" />
+    <Resource Include="backgrounds\IntroBackgroundDark.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

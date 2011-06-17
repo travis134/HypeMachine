@@ -13,8 +13,6 @@
     Foreground="{StaticResource PhoneAccentBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
     shell:SystemTray.IsVisible="False">
-
-    <!--LayoutRoot is the root grid where all page content is placed-->
     
     <Grid x:Name="LayoutRoot" Background="Transparent">
         
@@ -23,11 +21,7 @@
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
         
-        <!--Panorama control-->
         <controls:Pivot Name="mainView" Grid.Row="0">
-            <controls:Pivot.Background>
-                <ImageBrush ImageSource="PanoramaBackgroundDark.png" Stretch="None"/>
-            </controls:Pivot.Background>
             <controls:PivotItem Header="Hype">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <StackPanel x:Name="HypePanel" Orientation="Vertical"/>

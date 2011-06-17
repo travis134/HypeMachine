@@ -18,6 +18,7 @@ using System.Threading;
 using System.IO.IsolatedStorage;
 using System.Windows.Media.Imaging;
 using Microsoft.Advertising.Mobile.UI;
+using System.Net.NetworkInformation;
 
 namespace HypeMachine
 {
@@ -28,9 +29,8 @@ namespace HypeMachine
         private StorageHelper<Game> gamesStorageHelper;
         static Random rand = new Random();
         private User currentUser;
-        private String anid;
 
-        private Dictionary<String, BitmapImage> barImages = new Dictionary<String, BitmapImage>()
+        /*private Dictionary<String, BitmapImage> barImages = new Dictionary<String, BitmapImage>()
         {
             {"minusFull", new BitmapImage(new Uri("bar/minusFull.png", UriKind.Relative))},
             {"minusThree", new BitmapImage(new Uri("bar/minusThree.png", UriKind.Relative))},
@@ -45,67 +45,70 @@ namespace HypeMachine
             {"plus", new BitmapImage(new Uri("bar/plus.png", UriKind.Relative))},
             {"minusPressed", new BitmapImage(new Uri("bar/minusPressed.png", UriKind.Relative))},
             {"plusPressed", new BitmapImage(new Uri("bar/plusPressed.png", UriKind.Relative))}
-        };
+        };*/
 
         public MainPage()
         {
             InitializeComponent();
 
             AdControl hypeMachineAd = new AdControl() { ApplicationId = "4d3667ee-44c1-494c-929d-5e661b011918", AdUnitId = "10019312"};
-            ((Grid)FindName("LayoutRoot")).Children.Add(hypeMachineAd);
+            LayoutRoot.Children.Add(hypeMachineAd);
             Grid.SetRow(hypeMachineAd, 1);
 
-            bool darkTheme = ((Visibility)Application.Current.Resources["PhoneDarkThemeVisibility"] == Visibility.Visible);
-            Pivot mainView = (Pivot)FindName("mainView");
-            if (!darkTheme)
+            Assets.Instance.Create("PivotBackground", new BitmapImage(new Uri("backgrounds/PivotBackground.png", UriKind.Relative)));
+            Assets.Instance.Create("PivotBackgroundDark", new BitmapImage(new Uri("backgrounds/PivotBackgroundDark.png", UriKind.Relative)));
+
+            if (((Visibility)Application.Current.Resources["PhoneDarkThemeVisibility"] == Visibility.Visible))
             {
-                mainView.Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri("PanoramaBackground.png", UriKind.Relative)), Stretch=Stretch.None };
-                mainView.Foreground = new SolidColorBrush(Colors.Black);
-            }
-
-            object tempAnid;
-            UserExtendedProperties.TryGetValue("ANID", out tempAnid);
-
-            if (tempAnid != null && tempAnid.ToString().Length >= (32 + 2))
-            {
-                this.anid = tempAnid.ToString().Substring(2, 32);
-            } 
-
-            this.gamesList = new Dictionary<String, Game>();
-            gamesStorageHelper = new StorageHelper<Game>("Games.xml", "Stale.txt");
-            
-
-            /*
-            object tempFirstRun;
-
-            if (IsolatedStorageSettings.ApplicationSettings.TryGetValue("firstRun", out tempFirstRun))
-            {
-                IsolatedStorageSettings.ApplicationSettings["firstRun"] = false;
-                firstRun = (Boolean)tempFirstRun;
+                mainView.Background = new ImageBrush() { ImageSource = Assets.Instance.ReadBitmapImage("PivotBackgroundDark"), Stretch = Stretch.None };
+                mainView.Foreground = new SolidColorBrush(Colors.White);
             }
             else
             {
-                IsolatedStorageSettings.ApplicationSettings.Add("firstRun", false);
-                firstRun = true;
+                mainView.Background = new ImageBrush() { ImageSource = Assets.Instance.ReadBitmapImage("PivotBackground"), Stretch = Stretch.None };
+                mainView.Foreground = new SolidColorBrush(Colors.Black);
             }
-
-            if (firstRun)
-            {
-                this.NavigationService.Navigate(new Uri("/FirstRun.xaml", UriKind.Relative));
-            }*/
 
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (gamesStorageHelper.IsStale(new TimeSpan(0, 0, 0)))
+            if (true)
             {
-                refreshInfo();
+                //Show Tutorial
+                NavigationService.Navigate(new Uri("/Intro.xaml", UriKind.Relative));
             }
             else
             {
-                this.loadFromStorage();
+                if (Status.StorageExists() && !Status.StorageIsStale(new TimeSpan(0, 2, 0)))
+                {
+                    //Load from storage
+                }
+                else if (Status.InternetConnection())
+                {
+                    //Load from internet
+                }
+                else
+                {
+                    //Error loading
+                }
+
+                //Load Resources
+                Assets.Instance.Create("bar0", new BitmapImage(new Uri("bar/bar0.png", UriKind.Relative)));
+                Assets.Instance.Create("barNegative1", new BitmapImage(new Uri("bar/barNegative1.png", UriKind.Relative)));
+                Assets.Instance.Create("barNegative2", new BitmapImage(new Uri("bar/barNegative2.png", UriKind.Relative)));
+                Assets.Instance.Create("barNegative3", new BitmapImage(new Uri("bar/barNegative3.png", UriKind.Relative)));
+                Assets.Instance.Create("barNegative4", new BitmapImage(new Uri("bar/barNegative4.png", UriKind.Relative)));
+                Assets.Instance.Create("barPositive1", new BitmapImage(new Uri("bar/barPositive1.png", UriKind.Relative)));
+                Assets.Instance.Create("barPositive2", new BitmapImage(new Uri("bar/barPositive2.png", UriKind.Relative)));
+                Assets.Instance.Create("barPositive3", new BitmapImage(new Uri("bar/barPositive3.png", UriKind.Relative)));
+                Assets.Instance.Create("barPositive4", new BitmapImage(new Uri("bar/barPositive4.png", UriKind.Relative)));
+                Assets.Instance.Create("minusButton", new BitmapImage(new Uri("bar/minusButton.png", UriKind.Relative)));
+                Assets.Instance.Create("minusButtonPressed", new BitmapImage(new Uri("bar/minusButtonPressed.png", UriKind.Relative)));
+                Assets.Instance.Create("plusButton", new BitmapImage(new Uri("bar/plusButton.png", UriKind.Relative)));
+                Assets.Instance.Create("plusButtonPressed", new BitmapImage(new Uri("bar/plusButtonPressed.png", UriKind.Relative)));
+                //Update UI
             }
         }
 
@@ -203,6 +206,7 @@ namespace HypeMachine
             tempBar.ColumnDefinitions.Add(barFill);
             tempBar.ColumnDefinitions.Add(barPlus);
 
+            /*
             Button minusButton = new Button() { Width = 63, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
             Image minusImage = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
             minusButton.Content = minusImage;
@@ -251,7 +255,7 @@ namespace HypeMachine
             Button plusButton = new Button() { Width = 70, Height = 76, BorderThickness = new Thickness(0), Padding = new Thickness(-12) };
             Image plusImage = new Image() { Source = this.barImages["plus"], Width = 70, Height = 76 };
             plusButton.Content = plusImage;
-
+            
             plusButton.ClickMode = ClickMode.Release;
             plusButton.Click += new RoutedEventHandler(plusButton_Click);
 
@@ -268,10 +272,10 @@ namespace HypeMachine
             tempRow.Children.Add(tempBar);
 
             border.Child = tempRow;
-
+            */
             return border;
         }
-
+        /*
         void plusButton_Click(object sender, RoutedEventArgs e)
         {
             Button temp = (Button)sender;
@@ -296,7 +300,7 @@ namespace HypeMachine
             {
                 temp.Content = new Image() { Source = this.barImages["minus"], Width = 63, Height = 76 };
             }
-        }
+        }*/
 
         public void refreshInfo()
         {
@@ -359,9 +363,18 @@ namespace HypeMachine
                 }
             }
 
-            if (!String.IsNullOrEmpty(this.anid))
+            object tempAnid;
+            String anid = null;
+            UserExtendedProperties.TryGetValue("ANID", out tempAnid);
+
+            if (tempAnid != null && tempAnid.ToString().Length >= (32 + 2))
             {
-                tempUrl += String.Format("&user_args[anid]={0}&user_args[nickname]={1}", this.anid, "Travis");
+                anid = tempAnid.ToString().Substring(2, 32);
+            } 
+
+            if (!String.IsNullOrEmpty(anid))
+            {
+                tempUrl += String.Format("&user_args[anid]={0}&user_args[nickname]={1}", anid, "Travis");
             }
 
             List<Hype> hypes = new List<Hype>();
@@ -420,7 +433,7 @@ namespace HypeMachine
 
                         foreach (User user in users)
                         {
-                            if (user.Anid.Equals(this.anid, StringComparison.OrdinalIgnoreCase))
+                            if (user.Anid.Equals(anid, StringComparison.OrdinalIgnoreCase))
                             {
                                 this.currentUser = user;
                                 break;
